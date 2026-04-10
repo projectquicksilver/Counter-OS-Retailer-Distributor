@@ -1,0 +1,3003 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>CounterOS — Retailer Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — 1. CSS CUSTOM PROPERTIES & RESET
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+:root {
+  /* ── Core Palette ── */
+  --c-bg:         #060a06;
+  --c-bg-1:       #0b110b;
+  --c-bg-2:       #111811;
+  --c-bg-3:       #182018;
+  --c-bg-4:       #1e281e;
+  --c-border:     rgba(255,255,255,.07);
+  --c-border-em:  rgba(255,255,255,.14);
+
+  /* ── Brand Green ── */
+  --green-400:  #7ef27b;
+  --green-500:  #5dd65a;
+  --green-600:  #3db83a;
+  --green-glow: rgba(93,214,90,.18);
+  --green-text: #a8f7a6;
+
+  /* ── Gold (earnings) ── */
+  --gold-300:  #ffd976;
+  --gold-400:  #ffc940;
+  --gold-500:  #e6a800;
+  --gold-glow: rgba(255,201,64,.15);
+
+  /* ── Tier Colors ── */
+  --tier-bronze:  #cd8b5a;
+  --tier-silver:  #b8c4cc;
+  --tier-gold:    #ffc940;
+  --tier-diamond: #90d5ff;
+
+  /* ── Semantic ── */
+  --text-primary:   #f0f5f0;
+  --text-secondary: #8a9e8a;
+  --text-muted:     #4a5a4a;
+  --text-accent:    var(--green-400);
+
+  /* ── Typography ── */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* ── Spacing ── */
+  --r-sm:  .5rem;
+  --r-md:  .875rem;
+  --r-lg:  1.25rem;
+  --r-xl:  1.75rem;
+  --r-2xl: 2.5rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; background: #000; }
+body {
+  margin: 0; padding: 0;
+  min-height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+  display: inline-block; line-height: 1; vertical-align: middle;
+  font-size: inherit;
+}
+.icon-fill { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — 2. MOBILE SHELL & SCREEN SYSTEM
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* Mobile wrapper — always 480px max, full height */
+.app-shell {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
+/* Screen layer system */
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--c-bg);
+  flex-direction: column;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: flex; }
+
+/* Transition animations */
+@keyframes screenSlideIn  { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes screenSlideBack { from { transform: translateX(-8%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes screenFadeIn   { from { opacity: 0; } to { opacity: 1; } }
+.screen-enter      { animation: screenSlideIn  .32s cubic-bezier(.22,1,.36,1) forwards; }
+.screen-enter-back { animation: screenSlideBack .28s cubic-bezier(.22,1,.36,1) forwards; }
+.screen-fade       { animation: screenFadeIn    .4s ease forwards; }
+
+/* Toast */
+#toast {
+  position: absolute;
+  bottom: 5.5rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--c-bg-4);
+  color: var(--text-primary);
+  padding: .625rem 1.1rem;
+  border-radius: 9999px;
+  font-size: .8rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  z-index: 9999;
+  border: 1px solid var(--c-border-em);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  max-width: 88%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Confetti */
+#confetti-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 500;
+  display: none;
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — 3. DESIGN SYSTEM COMPONENTS
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .5rem; border: none; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700;
+  border-radius: var(--r-md); transition: all .16s; width: 100%;
+  padding: 1rem 1.5rem; font-size: .95rem; letter-spacing: .01em;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--green-400), var(--green-600));
+  color: #021902;
+  box-shadow: 0 8px 24px var(--green-glow), 0 1px 0 rgba(255,255,255,.15) inset;
+}
+.btn-primary:hover { box-shadow: 0 12px 32px rgba(93,214,90,.28); }
+
+.btn-ghost {
+  background: var(--c-bg-3);
+  color: var(--text-primary);
+  border: 1px solid var(--c-border-em);
+}
+.btn-ghost:hover { background: var(--c-bg-4); }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  color: #1a0a00;
+  box-shadow: 0 8px 24px var(--gold-glow);
+  font-size: 1rem; font-weight: 800;
+}
+
+.btn-sm {
+  padding: .6rem 1rem; font-size: .8rem;
+  border-radius: var(--r-sm); width: auto;
+}
+
+.btn-icon {
+  width: 2.5rem; height: 2.5rem; border-radius: var(--r-sm);
+  background: var(--c-bg-3); border: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+  color: var(--text-secondary);
+}
+.btn-icon:active { transform: scale(.9); }
+
+.btn-back {
+  width: 2.5rem; height: 2.5rem; border-radius: var(--r-sm);
+  background: var(--c-bg-3); border: 1px solid var(--c-border-em);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+  color: var(--text-accent);
+}
+.btn-back:active { transform: scale(.9); }
+
+/* ── Cards ── */
+.card {
+  background: var(--c-bg-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  transition: transform .16s, box-shadow .16s;
+}
+.card-em {
+  background: linear-gradient(145deg, var(--c-bg-2), var(--c-bg-1));
+  border: 1px solid var(--c-border-em);
+  border-radius: var(--r-lg);
+}
+.card-green {
+  background: linear-gradient(145deg, rgba(93,214,90,.06), rgba(93,214,90,.02));
+  border: 1px solid rgba(93,214,90,.2);
+  border-radius: var(--r-lg);
+}
+.card-gold {
+  background: linear-gradient(145deg, rgba(255,201,64,.08), rgba(255,201,64,.02));
+  border: 1px solid rgba(255,201,64,.2);
+  border-radius: var(--r-lg);
+}
+.card:active { transform: scale(.985); }
+
+/* ── Inputs ── */
+.input-wrap { display: flex; flex-direction: column; gap: .4rem; }
+.input-label {
+  font-size: .65rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-secondary);
+}
+.input-field {
+  background: var(--c-bg-3);
+  border: 1px solid var(--c-border-em);
+  border-radius: var(--r-md);
+  padding: .875rem 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: .95rem;
+  width: 100%; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input-field:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(93,214,90,.1);
+}
+.input-field::placeholder { color: var(--text-muted); }
+select.input-field { appearance: none; cursor: pointer; }
+
+/* ── Progress bar ── */
+.prog-track {
+  height: 6px; background: var(--c-bg-4);
+  border-radius: 9999px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%; border-radius: 9999px;
+  background: linear-gradient(90deg, var(--green-400), var(--green-600));
+  box-shadow: 0 0 12px var(--green-glow);
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.prog-fill-gold {
+  background: linear-gradient(90deg, var(--gold-300), var(--gold-500));
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ── OTP inputs ── */
+.otp-grid { display: flex; gap: .625rem; justify-content: center; }
+.otp-box {
+  width: 3rem; height: 3.5rem;
+  background: var(--c-bg-3);
+  border: 2px solid var(--c-border-em);
+  border-radius: var(--r-md);
+  text-align: center; font-size: 1.5rem; font-weight: 700;
+  font-family: var(--font-display); color: var(--green-400);
+  outline: none; transition: all .15s; caret-color: var(--green-400);
+}
+.otp-box:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(93,214,90,.12); }
+.otp-box.filled { border-color: var(--green-400); background: rgba(93,214,90,.06); }
+
+/* ── Chips & badges ── */
+.chip {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .2rem .7rem; border-radius: 9999px;
+  font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.chip-green { background: rgba(93,214,90,.12); color: var(--green-text); border: 1px solid rgba(93,214,90,.25); }
+.chip-gold  { background: rgba(255,201,64,.12); color: var(--gold-300);  border: 1px solid rgba(255,201,64,.25); }
+.chip-blue  { background: rgba(144,213,255,.1);  color: #90d5ff; border: 1px solid rgba(144,213,255,.2); }
+.chip-dim   { background: var(--c-bg-3); color: var(--text-secondary); border: 1px solid var(--c-border); }
+
+/* ── Tier badges ── */
+.tier-badge {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .25rem .75rem; border-radius: 9999px;
+  font-size: .7rem; font-weight: 800; letter-spacing: .06em;
+  font-family: var(--font-display);
+}
+.tier-bronze  { background: rgba(205,139,90,.15);  color: var(--tier-bronze);  border: 1px solid rgba(205,139,90,.3); }
+.tier-silver  { background: rgba(184,196,204,.1);  color: var(--tier-silver); border: 1px solid rgba(184,196,204,.2); }
+.tier-gold    { background: rgba(255,201,64,.15);  color: var(--tier-gold);   border: 1px solid rgba(255,201,64,.3); }
+.tier-diamond { background: rgba(144,213,255,.1);  color: var(--tier-diamond);border: 1px solid rgba(144,213,255,.25); }
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  position: sticky; bottom: 0; left: 0; right: 0;
+  background: rgba(6,10,6,.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--c-border);
+  display: flex; z-index: 100; margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: .6rem .25rem; gap: .2rem;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); transition: color .15s;
+  font-family: var(--font-body); font-size: .55rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+}
+.nav-btn .material-symbols-outlined { font-size: 22px; }
+.nav-btn.active { color: var(--green-400); }
+.nav-btn.active .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 24; }
+.nav-btn:active { transform: scale(.88); }
+
+/* ── Scrollbar ── */
+.screen::-webkit-scrollbar { width: 3px; }
+.screen::-webkit-scrollbar-thumb { background: var(--c-bg-4); border-radius: 9999px; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — 4. ANIMATIONS & EFFECTS
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Core keyframes ── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes scaleIn  { from { opacity:0; transform:scale(.8); } to { opacity:1; transform:scale(1); } }
+@keyframes scaleInSpring { from { opacity:0; transform:scale(.6); } to { opacity:1; transform:scale(1); } }
+@keyframes spin     { to { transform:rotate(360deg); } }
+@keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes float2   { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-8px) rotate(6deg)} }
+@keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+@keyframes ping     { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(2.2);opacity:0} }
+@keyframes gradShift{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes scanLine { 0%,100%{top:10%} 50%{top:85%} }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes countUp  { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes glow     { 0%,100%{box-shadow:0 0 20px var(--green-glow)} 50%{box-shadow:0 0 40px rgba(93,214,90,.35)} }
+@keyframes waveform { 0%,100%{height:4px} 50%{height:20px} }
+@keyframes dotDot   { 0%,100%{opacity:1} 33%{opacity:.2} }
+@keyframes slideUpIn{ from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+/* Animation utilities */
+.anim-fadeup   { animation: fadeUp .5s cubic-bezier(.4,0,.2,1) both; }
+.anim-scalein  { animation: scaleIn .4s cubic-bezier(.4,0,.2,1) both; }
+.anim-spring   { animation: scaleInSpring .5s cubic-bezier(.34,1.56,.64,1) both; }
+.anim-float    { animation: float 4s ease-in-out infinite; }
+.anim-float2   { animation: float2 5s ease-in-out infinite; }
+.anim-spin     { animation: spin 1s linear infinite; }
+.anim-pulse    { animation: pulse 2s ease-in-out infinite; }
+.anim-glow     { animation: glow 3s ease-in-out infinite; }
+
+.d1{animation-delay:.06s} .d2{animation-delay:.12s} .d3{animation-delay:.18s}
+.d4{animation-delay:.24s} .d5{animation-delay:.30s} .d6{animation-delay:.36s}
+.d7{animation-delay:.42s} .d8{animation-delay:.48s}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--c-bg-3) 25%, var(--c-bg-4) 50%, var(--c-bg-3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--r-sm);
+}
+
+/* Glowing dot indicator */
+.glow-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green-400);
+  box-shadow: 0 0 8px var(--green-400);
+  position: relative;
+}
+.glow-dot::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--green-400); animation: ping 1.5s ease-out infinite;
+}
+
+/* Gradient text */
+.grad-text {
+  background: linear-gradient(135deg, var(--green-text), var(--green-400), var(--gold-300));
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: gradShift 4s linear infinite;
+}
+.grad-text-gold {
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-300));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(17,24,17,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--c-border-em);
+}
+
+/* Noise texture overlay */
+.noise::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+  pointer-events: none; border-radius: inherit;
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — 5. ONBOARDING SCREEN SPECIFIC
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Onboarding progress dots ── */
+.onboard-dots {
+  display: flex; gap: .5rem; align-items: center; justify-content: center;
+}
+.onboard-dot {
+  height: 4px; border-radius: 9999px;
+  background: var(--c-bg-4); transition: all .4s cubic-bezier(.4,0,.2,1);
+}
+.onboard-dot.active { width: 24px; background: var(--green-400); box-shadow: 0 0 8px var(--green-400); }
+.onboard-dot.done   { width: 8px; background: rgba(93,214,90,.4); }
+.onboard-dot.todo   { width: 8px; background: var(--c-bg-4); }
+
+/* ── Onboarding layout ── */
+.onboard-hero {
+  position: relative; overflow: hidden;
+  border-radius: 0 0 2.5rem 2.5rem;
+  flex-shrink: 0;
+}
+.onboard-content {
+  flex: 1; padding: 1.5rem 1.25rem 2rem;
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+
+/* ── Phone mockup for OTP ── */
+.phone-mockup {
+  position: relative; width: 120px; height: 120px;
+  margin: 0 auto;
+}
+
+/* ── Step card for select options ── */
+.select-option {
+  background: var(--c-bg-2);
+  border: 2px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: 1rem; cursor: pointer;
+  display: flex; align-items: center; gap: 1rem;
+  transition: all .18s;
+}
+.select-option:active { transform: scale(.98); }
+.select-option.selected {
+  border-color: var(--green-500);
+  background: rgba(93,214,90,.05);
+}
+.select-option-icon {
+  width: 3rem; height: 3rem; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 1.4rem;
+}
+
+/* ── Distributor search ── */
+.dist-result {
+  background: var(--c-bg-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: .875rem 1rem;
+  display: flex; align-items: center; gap: .875rem;
+  cursor: pointer; transition: all .15s;
+}
+.dist-result:active { transform: scale(.98); }
+.dist-result.linked { border-color: var(--green-500); background: rgba(93,214,90,.04); }
+.dist-avatar {
+  width: 2.75rem; height: 2.75rem; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+
+/* ── Gemini loading state ── */
+.ai-thinking {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .75rem 1rem;
+  background: rgba(93,214,90,.05);
+  border: 1px solid rgba(93,214,90,.15);
+  border-radius: var(--r-md);
+}
+.ai-thinking-dots { display: flex; gap: 4px; }
+.ai-thinking-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green-400);
+}
+.ai-thinking-dot:nth-child(1) { animation: dotDot 1.2s ease-in-out infinite; }
+.ai-thinking-dot:nth-child(2) { animation: dotDot 1.2s ease-in-out infinite .2s; }
+.ai-thinking-dot:nth-child(3) { animation: dotDot 1.2s ease-in-out infinite .4s; }
+
+/* ── Waveform for AI speaking ── */
+.waveform { display: flex; align-items: center; gap: 3px; height: 24px; }
+.waveform-bar {
+  width: 3px; background: var(--green-400);
+  border-radius: 9999px; height: 4px;
+}
+.waveform-bar:nth-child(1) { animation: waveform .8s ease-in-out infinite 0s; }
+.waveform-bar:nth-child(2) { animation: waveform .8s ease-in-out infinite .1s; }
+.waveform-bar:nth-child(3) { animation: waveform .8s ease-in-out infinite .2s; }
+.waveform-bar:nth-child(4) { animation: waveform .8s ease-in-out infinite .15s; }
+.waveform-bar:nth-child(5) { animation: waveform .8s ease-in-out infinite .05s; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HTML — APP SHELL
+═══════════════════════════════════════════════════════════════════ -->
+<div class="app-shell" id="appShell">
+  <canvas id="confetti-canvas"></canvas>
+  <div id="toast"></div>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       SCREEN 1: SPLASH / LOGIN
+  ───────────────────────────────────────────────────────────────── -->
+  <div class="screen active screen-fade" id="s-login">
+    <!-- Background -->
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(93,214,90,.12), transparent),radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,201,64,.06), transparent);pointer-events:none"></div>
+
+    <!-- Grid pattern -->
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none"></div>
+
+    <div style="flex:1;display:flex;flex-direction:column;padding:0 1.5rem 2rem;position:relative">
+
+      <!-- Top: Logo section -->
+      <div style="padding-top:3.5rem;margin-bottom:2.5rem;text-align:center">
+        <!-- Logo mark -->
+        <div class="anim-spring" style="display:inline-flex;align-items:center;justify-content:center;width:5rem;height:5rem;background:linear-gradient(145deg,var(--c-bg-3),var(--c-bg-2));border:1px solid rgba(93,214,90,.3);border-radius:1.5rem;margin-bottom:1.5rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect x="4" y="16" width="14" height="20" rx="2" fill="none" stroke="#5dd65a" stroke-width="1.5"/>
+            <rect x="22" y="10" width="14" height="26" rx="2" fill="none" stroke="#5dd65a" stroke-width="1.5"/>
+            <rect x="8" y="20" width="6" height="2" rx="1" fill="#5dd65a" opacity=".5"/>
+            <rect x="8" y="24" width="6" height="2" rx="1" fill="#5dd65a" opacity=".5"/>
+            <rect x="26" y="14" width="6" height="2" rx="1" fill="#5dd65a" opacity=".5"/>
+            <rect x="26" y="18" width="6" height="2" rx="1" fill="#5dd65a" opacity=".5"/>
+            <rect x="26" y="22" width="6" height="2" rx="1" fill="#5dd65a" opacity=".5"/>
+            <circle cx="20" cy="8" r="3" fill="#ffc940"/>
+            <path d="M20 5 L20 11 M17 8 L23 8" stroke="#ffc940" stroke-width="1.2" opacity=".5"/>
+          </svg>
+          <!-- Glow ring -->
+          <div style="position:absolute;inset:-2px;border-radius:1.6rem;border:1px solid rgba(93,214,90,.15);animation:ping 2s ease-out infinite"></div>
+        </div>
+
+        <div class="anim-fadeup d2">
+          <h1 style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;letter-spacing:-.03em;margin:0 0 .35rem;line-height:1">
+            Counter<span class="grad-text">OS</span>
+          </h1>
+          <p style="font-size:.8rem;color:var(--text-secondary);letter-spacing:.12em;text-transform:uppercase;font-weight:500">Retailer Intelligence Platform</p>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="anim-fadeup d3" style="display:flex;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap">
+          <div class="chip chip-green"><span class="material-symbols-outlined" style="font-size:10px">verified</span> GST Verified</div>
+          <div class="chip chip-gold"><span class="material-symbols-outlined" style="font-size:10px">workspace_premium</span> 4-Tier Rewards</div>
+          <div class="chip chip-dim"><span class="material-symbols-outlined" style="font-size:10px">auto_awesome</span> AI-Powered</div>
+        </div>
+      </div>
+
+      <!-- Floating earn cards -->
+      <div class="anim-fadeup d4" style="position:relative;height:90px;margin-bottom:2rem">
+        <div class="anim-float" style="position:absolute;left:0;top:0;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-md);padding:.6rem .875rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 32px rgba(0,0,0,.4)">
+          <div style="width:2rem;height:2rem;background:rgba(93,214,90,.12);border-radius:.5rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">trending_up</span>
+          </div>
+          <div>
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Purchase Reward</p>
+            <p style="font-family:var(--font-display);font-weight:700;font-size:.95rem;color:var(--green-400)">+₹1,248</p>
+          </div>
+        </div>
+        <div class="anim-float2" style="position:absolute;right:0;bottom:0;background:var(--c-bg-2);border:1px solid rgba(255,201,64,.2);border-radius:var(--r-md);padding:.6rem .875rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 32px rgba(0,0,0,.4)">
+          <div style="width:2rem;height:2rem;background:rgba(255,201,64,.1);border-radius:.5rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--gold-400)">storefront</span>
+          </div>
+          <div>
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Sale Reward</p>
+            <p style="font-family:var(--font-display);font-weight:700;font-size:.95rem;color:var(--gold-300)">+₹356</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login form -->
+      <div class="anim-fadeup d5" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1rem">
+        <!-- Phone input -->
+        <div id="loginPhasePhone">
+          <p style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:1rem">Enter your mobile number</p>
+          <div style="display:flex;gap:.625rem;margin-bottom:1rem">
+            <div style="background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:var(--r-md);padding:.875rem 1rem;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:.3rem;flex-shrink:0;font-size:.9rem">
+              🇮🇳 +91
+            </div>
+            <input class="input-field" type="tel" maxlength="10" placeholder="98765 43210" id="loginPhone" style="flex:1"/>
+          </div>
+          <button class="btn btn-primary" onclick="handleSendOTP()">
+            <span class="material-symbols-outlined">sms</span>
+            Send OTP
+          </button>
+        </div>
+
+        <!-- OTP input (hidden initially) -->
+        <div id="loginPhaseOTP" style="display:none">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+            <div style="width:2.5rem;height:2.5rem;background:rgba(93,214,90,.1);border-radius:.75rem;display:flex;align-items:center;justify-content:center">
+              <span class="material-symbols-outlined icon-fill" style="color:var(--green-400)">mark_email_read</span>
+            </div>
+            <div>
+              <p style="font-weight:600;font-size:.9rem">OTP sent!</p>
+              <p style="font-size:.75rem;color:var(--text-secondary)" id="otpSentTo">Sent to +91 XXXXXXXXXX</p>
+            </div>
+          </div>
+          <div class="otp-grid" style="margin-bottom:1rem">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="o1" oninput="otpAdvance(this,'o2')"/>
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="o2" oninput="otpAdvance(this,'o3')"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1" id="o3" oninput="otpAdvance(this,'o4')"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1" id="o4" oninput="otpAdvance(this,null)"/>
+          </div>
+          <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin-bottom:.875rem">
+            Demo OTP: <strong style="color:var(--green-400);font-family:var(--font-mono)">1234</strong>
+          </p>
+          <button class="btn btn-primary" onclick="handleVerifyOTP()">
+            <span class="material-symbols-outlined">verified</span>
+            Verify & Continue
+          </button>
+          <button onclick="loginPhoneBack()" style="background:none;border:none;color:var(--text-muted);font-size:.8rem;cursor:pointer;width:100%;text-align:center;margin-top:.75rem;padding:.5rem">
+            ← Change number
+          </button>
+        </div>
+
+        <p style="font-size:.7rem;color:var(--text-muted);text-align:center;line-height:1.5">
+          By continuing you agree to our <span style="color:var(--green-400)">Terms</span> & <span style="color:var(--green-400)">Privacy Policy</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       SCREEN 2: SHOP SETUP
+  ───────────────────────────────────────────────────────────────── -->
+  <div class="screen" id="s-shop-setup">
+    <!-- Header -->
+    <div class="glass" style="flex-shrink:0;padding:1rem 1.25rem .75rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <button class="btn-back" onclick="navigate('s-login',true)">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span>
+        </button>
+        <div class="onboard-dots">
+          <div class="onboard-dot active"></div>
+          <div class="onboard-dot todo"></div>
+          <div class="onboard-dot todo"></div>
+          <div class="onboard-dot todo"></div>
+        </div>
+        <div class="chip chip-dim">Step 1 of 4</div>
+      </div>
+    </div>
+
+    <div style="padding:1.5rem 1.25rem;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:2rem">
+
+      <!-- Title -->
+      <div class="anim-fadeup">
+        <div style="display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.75rem">
+          <div style="width:1.75rem;height:1.75rem;background:rgba(93,214,90,.12);border-radius:.5rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">storefront</span>
+          </div>
+          <span style="font-size:.75rem;font-weight:600;color:var(--green-400);text-transform:uppercase;letter-spacing:.1em">Shop Details</span>
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;line-height:1.1;margin-bottom:.4rem">Tell us about<br>your shop</h2>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.5">This helps us match you with the right distributors and calculate accurate rewards.</p>
+      </div>
+
+      <!-- Form -->
+      <div class="anim-fadeup d2" style="display:flex;flex-direction:column;gap:1rem">
+
+        <div class="input-wrap">
+          <label class="input-label">Shop Name *</label>
+          <input class="input-field" type="text" id="shopName" placeholder="e.g. Ramesh Agro Traders" value="Ramesh Agro Traders"/>
+        </div>
+
+        <div class="input-wrap">
+          <label class="input-label">Owner Name *</label>
+          <input class="input-field" type="text" id="ownerName" placeholder="Full name" value="Ramesh Kumar Sharma"/>
+        </div>
+
+        <!-- Shop category -->
+        <div class="input-wrap">
+          <label class="input-label">Shop Category *</label>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div class="select-option selected" id="cat-agri" onclick="selectCategory('agri')">
+              <div class="select-option-icon" style="background:rgba(93,214,90,.1)">🌱</div>
+              <div style="flex:1">
+                <p style="font-weight:600;font-size:.9rem">Agri Input Dealer</p>
+                <p style="font-size:.72rem;color:var(--text-secondary)">Seeds, fertilizers, pesticides</p>
+              </div>
+              <span class="material-symbols-outlined icon-fill" style="color:var(--green-400);font-size:1.1rem" id="cat-agri-check">check_circle</span>
+            </div>
+            <div class="select-option" id="cat-kirana" onclick="selectCategory('kirana')">
+              <div class="select-option-icon" style="background:rgba(255,201,64,.08)">🛒</div>
+              <div style="flex:1">
+                <p style="font-weight:600;font-size:.9rem">General Kirana</p>
+                <p style="font-size:.72rem;color:var(--text-secondary)">Mixed retail store</p>
+              </div>
+              <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem" id="cat-kirana-check">radio_button_unchecked</span>
+            </div>
+            <div class="select-option" id="cat-chemical" onclick="selectCategory('chemical')">
+              <div class="select-option-icon" style="background:rgba(144,213,255,.08)">🧪</div>
+              <div style="flex:1">
+                <p style="font-weight:600;font-size:.9rem">Fertilizer & Chemical</p>
+                <p style="font-size:.72rem;color:var(--text-secondary)">Specialized agri chemicals</p>
+              </div>
+              <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1.1rem" id="cat-chemical-check">radio_button_unchecked</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GST Number -->
+        <div class="input-wrap">
+          <label class="input-label">GST Number <span style="color:var(--text-muted)">(Optional)</span></label>
+          <div style="position:relative">
+            <input class="input-field" type="text" id="gstNumber" placeholder="27AAPFU0939F1ZV" style="padding-right:3.5rem;font-family:var(--font-mono);font-size:.85rem" value="27RAMP1234F1ZV"/>
+            <div id="gstStatus" style="position:absolute;right:.875rem;top:50%;transform:translateY(-50%)">
+              <span class="chip chip-green" style="font-size:.6rem">Verified ✓</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="input-wrap">
+          <label class="input-label">Shop Location *</label>
+          <button onclick="fetchLocation()" id="locationBtn" style="width:100%;display:flex;align-items:center;gap:.75rem;background:rgba(93,214,90,.05);border:1.5px dashed rgba(93,214,90,.3);border-radius:var(--r-md);padding:.875rem 1rem;cursor:pointer;transition:all .2s;text-align:left;margin-bottom:.5rem">
+            <div style="width:2rem;height:2rem;background:rgba(93,214,90,.1);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0" id="locationBtnIcon">
+              <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">my_location</span>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:.85rem;font-weight:600;color:var(--green-400)" id="locationBtnTitle">Detect My Location</p>
+              <p style="font-size:.7rem;color:var(--text-secondary)" id="locationBtnSub">Tap to auto-detect via GPS</p>
+            </div>
+            <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:1rem">chevron_right</span>
+          </button>
+
+          <!-- Detected location card -->
+          <div id="locationCard" style="display:none;background:rgba(93,214,90,.05);border:1px solid rgba(93,214,90,.2);border-radius:var(--r-md);padding:.75rem 1rem;margin-bottom:.5rem;display:none;align-items:center;gap:.75rem">
+            <div style="width:2rem;height:2rem;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span class="material-symbols-outlined icon-fill" style="font-size:.9rem;color:#021902">location_on</span>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:.85rem;font-weight:700" id="locationName">Khetgaon, Madhya Pradesh</p>
+              <p style="font-size:.68rem;color:var(--text-secondary)" id="locationCoords">23.4587° N, 76.9318° E</p>
+            </div>
+            <button onclick="clearLocation()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:.25rem">
+              <span class="material-symbols-outlined" style="font-size:1rem">close</span>
+            </button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:.5rem;margin:.25rem 0">
+            <div style="flex:1;height:1px;background:var(--c-border)"></div>
+            <span style="font-size:.65rem;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase">or type manually</span>
+            <div style="flex:1;height:1px;background:var(--c-border)"></div>
+          </div>
+
+          <div style="position:relative">
+            <span class="material-symbols-outlined" style="position:absolute;left:.875rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text-muted)">edit_location</span>
+            <input class="input-field" type="text" id="locationManual" placeholder="Village, District, State" style="padding-left:2.75rem"/>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="anim-fadeup d3">
+        <button class="btn btn-primary" onclick="handleShopSetup()">
+          Continue <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       SCREEN 3: DISTRIBUTOR LINKING
+  ───────────────────────────────────────────────────────────────── -->
+  <div class="screen" id="s-distributor">
+    <div class="glass" style="flex-shrink:0;padding:1rem 1.25rem .75rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <button class="btn-back" onclick="navigate('s-shop-setup',true)">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span>
+        </button>
+        <div class="onboard-dots">
+          <div class="onboard-dot done"></div>
+          <div class="onboard-dot active"></div>
+          <div class="onboard-dot todo"></div>
+          <div class="onboard-dot todo"></div>
+        </div>
+        <div class="chip chip-dim">Step 2 of 4</div>
+      </div>
+    </div>
+
+    <div style="padding:1.5rem 1.25rem;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:2rem">
+      <div class="anim-fadeup">
+        <div style="display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.75rem">
+          <div style="width:1.75rem;height:1.75rem;background:rgba(255,201,64,.1);border-radius:.5rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--gold-400)">handshake</span>
+          </div>
+          <span style="font-size:.75rem;font-weight:600;color:var(--gold-400);text-transform:uppercase;letter-spacing:.1em">Link Distributors</span>
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;line-height:1.1;margin-bottom:.4rem">Who do you buy<br>stock from?</h2>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.5">Link your distributors to start earning cashback on every purchase. We'll verify your invoices automatically.</p>
+      </div>
+
+      <!-- Tier explainer -->
+      <div class="anim-fadeup d1 card-gold" style="padding:1rem;border-radius:var(--r-lg)">
+        <p style="font-size:.7rem;color:var(--gold-400);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">💰 How Purchase Rewards Work</p>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(205,139,90,.1);border-radius:.5rem">
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:.8rem">🥉</span>
+              <span style="font-size:.78rem;font-weight:600">Bronze — Under ₹10,000/mo</span>
+            </div>
+            <span style="font-size:.75rem;color:var(--text-muted)">No reward</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(184,196,204,.08);border-radius:.5rem">
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:.8rem">🥈</span>
+              <span style="font-size:.78rem;font-weight:600">Silver — ₹10K – ₹49,999</span>
+            </div>
+            <span style="font-size:.75rem;font-weight:700;color:var(--tier-silver)">1.0%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,201,64,.1);border-radius:.5rem">
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:.8rem">🥇</span>
+              <span style="font-size:.78rem;font-weight:600">Gold — ₹50K – ₹99,999</span>
+            </div>
+            <span style="font-size:.75rem;font-weight:700;color:var(--gold-300)">1.75%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(144,213,255,.08);border-radius:.5rem">
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:.8rem">💎</span>
+              <span style="font-size:.78rem;font-weight:600">Diamond — ₹1 Lakh+</span>
+            </div>
+            <span style="font-size:.75rem;font-weight:700;color:var(--tier-diamond)">2.5%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="anim-fadeup d2">
+        <div style="position:relative;margin-bottom:1rem">
+          <span class="material-symbols-outlined" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1.1rem">search</span>
+          <input class="input-field" type="text" placeholder="Search distributor by name or city..." id="distSearch" style="padding-left:3rem" oninput="searchDistributors(this.value)"/>
+        </div>
+
+        <!-- Gemini AI suggestion bar -->
+        <div id="distAiBar" class="ai-thinking" style="margin-bottom:1rem">
+          <div class="waveform">
+            <div class="waveform-bar"></div><div class="waveform-bar"></div>
+            <div class="waveform-bar"></div><div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+          <p style="font-size:.8rem;color:var(--green-400);font-weight:500" id="distAiText">AI finding distributors near your area...</p>
+        </div>
+
+        <!-- Results list -->
+        <div id="distResults" style="display:flex;flex-direction:column;gap:.625rem"></div>
+
+        <!-- Linked distributors -->
+        <div id="linkedDistSection" style="display:none;margin-top:1.25rem">
+          <p style="font-size:.7rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.625rem">Linked Distributors</p>
+          <div id="linkedDistList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary anim-fadeup d4" onclick="handleDistributorNext()" id="distNextBtn">
+        Continue <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+      <button onclick="handleDistributorNext()" style="background:none;border:none;color:var(--text-muted);font-size:.8rem;cursor:pointer;text-align:center;padding:.5rem">
+        Skip for now — I'll link later
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       SCREEN 4: PAYOUT SETUP
+  ───────────────────────────────────────────────────────────────── -->
+  <div class="screen" id="s-payout">
+    <div class="glass" style="flex-shrink:0;padding:1rem 1.25rem .75rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <button class="btn-back" onclick="navigate('s-distributor',true)">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span>
+        </button>
+        <div class="onboard-dots">
+          <div class="onboard-dot done"></div>
+          <div class="onboard-dot done"></div>
+          <div class="onboard-dot active"></div>
+          <div class="onboard-dot todo"></div>
+        </div>
+        <div class="chip chip-dim">Step 3 of 4</div>
+      </div>
+    </div>
+
+    <div style="padding:1.5rem 1.25rem;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:2rem">
+      <div class="anim-fadeup">
+        <div style="display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.75rem">
+          <div style="width:1.75rem;height:1.75rem;background:rgba(255,201,64,.1);border-radius:.5rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--gold-400)">account_balance</span>
+          </div>
+          <span style="font-size:.75rem;font-weight:600;color:var(--gold-400);text-transform:uppercase;letter-spacing:.1em">Payout Setup</span>
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:1.75rem;font-weight:800;line-height:1.1;margin-bottom:.4rem">Where should we<br>send your earnings?</h2>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.5">Your rewards are credited here instantly. No minimum withdrawal.</p>
+      </div>
+
+      <!-- Payout method selector -->
+      <div class="anim-fadeup d1" style="display:flex;gap:.625rem">
+        <div class="select-option selected" id="pay-upi" onclick="selectPayMethod('upi')" style="flex:1;flex-direction:column;text-align:center;padding:.875rem .5rem;gap:.4rem">
+          <span style="font-size:1.5rem">📱</span>
+          <p style="font-weight:700;font-size:.85rem">UPI</p>
+          <p style="font-size:.65rem;color:var(--text-secondary)">Instant</p>
+          <span class="material-symbols-outlined icon-fill" style="color:var(--green-400);font-size:.9rem" id="pay-upi-check">check_circle</span>
+        </div>
+        <div class="select-option" id="pay-bank" onclick="selectPayMethod('bank')" style="flex:1;flex-direction:column;text-align:center;padding:.875rem .5rem;gap:.4rem">
+          <span style="font-size:1.5rem">🏦</span>
+          <p style="font-weight:700;font-size:.85rem">Bank</p>
+          <p style="font-size:.65rem;color:var(--text-secondary)">1–2 days</p>
+          <span class="material-symbols-outlined" style="color:var(--text-muted);font-size:.9rem" id="pay-bank-check">radio_button_unchecked</span>
+        </div>
+      </div>
+
+      <!-- UPI Form -->
+      <div class="anim-fadeup d2" id="formUPI" style="display:flex;flex-direction:column;gap:1rem">
+        <div class="input-wrap">
+          <label class="input-label">UPI ID *</label>
+          <div style="position:relative">
+            <input class="input-field" type="text" id="upiId" placeholder="yourname@upi" value="ramesh@okicici" style="padding-right:5.5rem"/>
+            <div style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%)">
+              <div class="chip chip-green" style="font-size:.6rem">Verified ✓</div>
+            </div>
+          </div>
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">Registered Name</label>
+          <input class="input-field" type="text" placeholder="As per UPI" value="Ramesh Kumar Sharma" readonly style="color:var(--text-secondary)"/>
+        </div>
+      </div>
+
+      <!-- Bank Form (hidden) -->
+      <div id="formBank" style="display:none;flex-direction:column;gap:1rem">
+        <div class="input-wrap">
+          <label class="input-label">Account Number *</label>
+          <input class="input-field" type="text" placeholder="Enter account number" value="XXXX XXXX 4512"/>
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">IFSC Code *</label>
+          <input class="input-field" type="text" placeholder="e.g. SBIN0041823" value="SBIN0041823" style="font-family:var(--font-mono)"/>
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">Account Holder Name</label>
+          <input class="input-field" type="text" value="Ramesh Kumar Sharma" readonly style="color:var(--text-secondary)"/>
+        </div>
+      </div>
+
+      <!-- Info card -->
+      <div class="anim-fadeup d3 card-green" style="padding:.875rem 1rem;display:flex;align-items:flex-start;gap:.75rem">
+        <span class="material-symbols-outlined icon-fill" style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;margin-top:2px">info</span>
+        <div>
+          <p style="font-size:.8rem;font-weight:600;margin-bottom:.2rem">Dual Earnings, One Account</p>
+          <p style="font-size:.75rem;color:var(--text-secondary);line-height:1.5">Both your purchase rewards and sale rewards will be credited to this account. You can add multiple accounts later.</p>
+        </div>
+      </div>
+
+      <button class="btn btn-primary anim-fadeup d4" onclick="handlePayoutNext()">
+        Complete Setup <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       SCREEN 5: READY — AI WELCOME
+  ───────────────────────────────────────────────────────────────── -->
+  <div class="screen" id="s-ready">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden">
+
+      <!-- BG effects -->
+      <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(93,214,90,.12),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,201,64,.08),transparent 70%);pointer-events:none"></div>
+
+      <!-- Success animation -->
+      <div class="anim-spring" style="position:relative;width:7rem;height:7rem;margin-bottom:1.75rem">
+        <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(93,214,90,.2);animation:ping 2.5s ease-out infinite"></div>
+        <div style="position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(93,214,90,.1);animation:ping 2.5s ease-out infinite .5s"></div>
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 48px rgba(93,214,90,.3)">
+          <span class="material-symbols-outlined icon-fill" style="font-size:3rem;color:#021902">rocket_launch</span>
+        </div>
+      </div>
+
+      <h2 class="anim-fadeup d1" style="font-family:var(--font-display);font-size:2rem;font-weight:800;margin-bottom:.5rem;line-height:1.15">
+        You're all set,<br><span class="grad-text" id="readyName">Ramesh!</span>
+      </h2>
+      <p class="anim-fadeup d2" style="font-size:.9rem;color:var(--text-secondary);line-height:1.6;max-width:300px;margin-bottom:1.75rem">
+        CounterOS is now configured for your shop. Start earning on every purchase and every sale.
+      </p>
+
+      <!-- Checklist -->
+      <div class="anim-fadeup d3" style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.75rem">
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+          <div style="width:1.5rem;height:1.5rem;background:rgba(93,214,90,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">check</span>
+          </div>
+          <span style="font-size:.85rem;font-weight:500">Shop profile created</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+          <div style="width:1.5rem;height:1.5rem;background:rgba(93,214,90,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">check</span>
+          </div>
+          <span style="font-size:.85rem;font-weight:500">Distributor linked</span>
+          <span class="chip chip-green" style="margin-left:auto;font-size:.6rem" id="readyDistCount">1 linked</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+          <div style="width:1.5rem;height:1.5rem;background:rgba(93,214,90,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">check</span>
+          </div>
+          <span style="font-size:.85rem;font-weight:500">Payout account linked</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.7rem .875rem;background:rgba(93,214,90,.05);border:1px solid rgba(93,214,90,.2);border-radius:var(--r-md)">
+          <div style="width:1.5rem;height:1.5rem;background:rgba(93,214,90,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">auto_awesome</span>
+          </div>
+          <span style="font-size:.85rem;font-weight:600;color:var(--green-400)">AI Intelligence enabled</span>
+          <div class="glow-dot" style="margin-left:auto;width:6px;height:6px"></div>
+        </div>
+      </div>
+
+      <!-- AI Welcome message -->
+      <div class="anim-fadeup d4" id="aiWelcomeCard" style="width:100%;max-width:360px;background:var(--c-bg-2);border:1px solid rgba(93,214,90,.2);border-radius:var(--r-lg);padding:1rem;margin-bottom:1.75rem;text-align:left">
+        <div style="display:flex;align-items:center;gap:.625rem;margin-bottom:.625rem">
+          <div style="width:2rem;height:2rem;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:#021902">auto_awesome</span>
+          </div>
+          <div>
+            <p style="font-size:.75rem;font-weight:700;color:var(--green-400)">CounterOS AI</p>
+            <div class="ai-thinking-dots" id="aiLoadingDots">
+              <div class="ai-thinking-dot"></div>
+              <div class="ai-thinking-dot"></div>
+              <div class="ai-thinking-dot"></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-secondary);line-height:1.6;display:none" id="aiWelcomeText"></p>
+      </div>
+
+      <button class="btn btn-primary anim-fadeup d5" onclick="navigate('s-home')" style="max-width:360px;width:100%">
+        <span class="material-symbols-outlined">home</span>
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 6: HOME DASHBOARD
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-home">
+  <!-- sticky header -->
+  <div class="glass" style="flex-shrink:0;padding:1rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div style="width:2.75rem;height:2.75rem;border-radius:50%;background:linear-gradient(135deg,var(--c-bg-3),var(--c-bg-4));border:1px solid var(--c-border-em);display:flex;align-items:center;justify-content:center">
+          <span class="material-symbols-outlined icon-fill" style="font-size:1.4rem;color:var(--text-secondary)">person</span>
+        </div>
+        <div>
+          <p style="font-weight:700;font-family:var(--font-display);font-size:.95rem" id="homeGreeting">Namaste, Ramesh! 👋</p>
+          <p style="font-size:.7rem;color:var(--text-muted);display:flex;align-items:center;gap:.25rem">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.75rem;color:var(--green-400)">location_on</span>
+            <span id="homeLocation">Khetgaon, MP</span>
+          </p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <button class="btn-icon" onclick="navigate('s-assistant')" style="border-color:rgba(93,214,90,.25);color:var(--green-400)">
+          <span class="material-symbols-outlined icon-fill" style="font-size:1.1rem">auto_awesome</span>
+        </button>
+        <button class="btn-icon" style="position:relative" onclick="showToast('No new notifications')">
+          <span class="material-symbols-outlined" style="font-size:1.2rem">notifications</span>
+          <div style="position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ef4444;border-radius:50%;border:1.5px solid var(--c-bg)"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;padding-bottom:5.5rem">
+
+    <!-- Tier + Balance Hero -->
+    <div style="padding:1rem 1.25rem 0">
+      <div style="position:relative;background:linear-gradient(145deg,#0d1f0e,#091209);border:1px solid rgba(93,214,90,.15);border-radius:1.5rem;padding:1.25rem;overflow:hidden;margin-bottom:1rem">
+        <!-- BG glow -->
+        <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(93,214,90,.1),transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-30px;left:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(255,201,64,.06),transparent 70%);pointer-events:none"></div>
+        <!-- Tier row -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+          <div>
+            <p style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem">Total Wallet Balance</p>
+            <p style="font-family:var(--font-display);font-size:2rem;font-weight:800;line-height:1" id="homeBalance">₹3,482.50</p>
+            <p style="font-size:.72rem;color:var(--text-secondary);margin-top:.2rem">
+              <span style="color:var(--green-400);font-weight:600">+₹247</span> today
+            </p>
+          </div>
+          <div style="text-align:right">
+            <div class="tier-badge tier-gold" style="margin-bottom:.35rem" id="homeTierBadge">🥇 GOLD</div>
+            <p style="font-size:.65rem;color:var(--text-muted)">247 sales this month</p>
+          </div>
+        </div>
+        <!-- Dual earnings pills -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem">
+          <div style="background:rgba(93,214,90,.08);border:1px solid rgba(93,214,90,.15);border-radius:.875rem;padding:.625rem .875rem">
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">📦 Purchase Rewards</p>
+            <p style="font-family:var(--font-display);font-weight:800;color:var(--green-400);font-size:1.1rem">₹2,156</p>
+            <p style="font-size:.65rem;color:var(--text-secondary)">Gold tier • 1.75%</p>
+          </div>
+          <div style="background:rgba(255,201,64,.07);border:1px solid rgba(255,201,64,.15);border-radius:.875rem;padding:.625rem .875rem">
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🏪 Sale Rewards</p>
+            <p style="font-family:var(--font-display);font-weight:800;color:var(--gold-300);font-size:1.1rem">₹1,326</p>
+            <p style="font-size:.65rem;color:var(--text-secondary)">Avg ₹18 per sale</p>
+          </div>
+        </div>
+        <!-- Tier progress -->
+        <div style="margin-top:.875rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
+            <span style="font-size:.68rem;color:var(--text-secondary)">Gold → Diamond progress</span>
+            <span style="font-size:.68rem;font-weight:700;color:var(--gold-300)">₹73,450 / ₹1,00,000</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill prog-fill-gold" style="width:73%"></div>
+          </div>
+          <p style="font-size:.63rem;color:var(--text-muted);margin-top:.25rem">₹26,550 more to reach 💎 Diamond (2.5% cashback)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="padding:0 1.25rem;margin-bottom:1rem">
+      <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.625rem">Quick Actions</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem">
+        <button onclick="navigate('s-invoice')" style="display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .25rem;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-md);cursor:pointer;transition:all .15s" class="qa-btn">
+          <div style="width:2.25rem;height:2.25rem;background:rgba(93,214,90,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">upload_file</span>
+          </div>
+          <span style="font-size:.62rem;font-weight:700;color:var(--text-secondary);text-align:center">Invoice</span>
+        </button>
+        <button onclick="navigate('s-sell')" style="display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .25rem;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-md);cursor:pointer;transition:all .15s" class="qa-btn">
+          <div style="width:2.25rem;height:2.25rem;background:rgba(255,201,64,.08);border-radius:.625rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--gold-400)">storefront</span>
+          </div>
+          <span style="font-size:.62rem;font-weight:700;color:var(--text-secondary);text-align:center">Sell</span>
+        </button>
+        <button onclick="navigate('s-earnings')" style="display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .25rem;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-md);cursor:pointer;transition:all .15s" class="qa-btn">
+          <div style="width:2.25rem;height:2.25rem;background:rgba(144,213,255,.08);border-radius:.625rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--tier-diamond)">analytics</span>
+          </div>
+          <span style="font-size:.62rem;font-weight:700;color:var(--text-secondary);text-align:center">Earnings</span>
+        </button>
+        <button onclick="navigate('s-inventory')" style="display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .25rem;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-md);cursor:pointer;transition:all .15s" class="qa-btn">
+          <div style="width:2.25rem;height:2.25rem;background:rgba(205,139,90,.08);border-radius:.625rem;display:flex;align-items:center;justify-content:center">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--tier-bronze)">inventory_2</span>
+          </div>
+          <span style="font-size:.62rem;font-weight:700;color:var(--text-secondary);text-align:center">Inventory</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Today's Activity -->
+    <div style="padding:0 1.25rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.625rem">
+        <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em">Today's Activity</p>
+        <button onclick="navigate('s-earnings')" style="background:none;border:none;font-size:.72rem;color:var(--green-400);cursor:pointer;font-weight:600">View all →</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.5rem" id="homeActivityList">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+
+    <!-- AI Insight Card -->
+    <div style="padding:0 1.25rem;margin-bottom:1rem">
+      <div style="background:linear-gradient(145deg,rgba(93,214,90,.06),rgba(93,214,90,.02));border:1px solid rgba(93,214,90,.15);border-radius:var(--r-lg);padding:1rem" id="homeAiInsight">
+        <div style="display:flex;align-items:center;gap:.625rem;margin-bottom:.625rem">
+          <div style="width:1.75rem;height:1.75rem;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:#021902">auto_awesome</span>
+          </div>
+          <p style="font-size:.72rem;font-weight:700;color:var(--green-400)">AI Insight</p>
+          <div class="ai-thinking-dots" id="homeInsightLoader" style="margin-left:auto">
+            <div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-secondary);line-height:1.6;display:none" id="homeInsightText"></p>
+      </div>
+    </div>
+
+    <!-- Recent Invoices -->
+    <div style="padding:0 1.25rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.625rem">
+        <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em">Recent Invoices</p>
+        <button onclick="navigate('s-invoice')" style="background:none;border:none;font-size:.72rem;color:var(--green-400);cursor:pointer;font-weight:600">Upload new →</button>
+      </div>
+      <div id="homeInvoiceList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+
+    <!-- Top Products -->
+    <div style="padding:0 1.25rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.625rem">
+        <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em">Top Selling Products</p>
+        <button onclick="navigate('s-inventory')" style="background:none;border:none;font-size:.72rem;color:var(--green-400);cursor:pointer;font-weight:600">All →</button>
+      </div>
+      <div id="homeProductList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="setNav(this);navigate('s-home')"><span class="material-symbols-outlined">home</span>Home</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-invoice')"><span class="material-symbols-outlined">upload_file</span>Invoice</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-sell')"><span class="material-symbols-outlined">storefront</span>Sell</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-earnings')"><span class="material-symbols-outlined">analytics</span>Earnings</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-inventory')"><span class="material-symbols-outlined">inventory_2</span>Inventory</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 7: SMART INVOICE UPLOAD
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-invoice">
+  <div class="glass" style="flex-shrink:0;padding:.875rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;gap:.875rem">
+      <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span></button>
+      <div><h2 style="font-family:var(--font-display);font-weight:800;font-size:1.1rem">Smart Invoice Upload</h2>
+      <p style="font-size:.68rem;color:var(--text-secondary)">Gemini AI reads your invoice automatically</p></div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:1.25rem;padding-bottom:2rem;display:flex;flex-direction:column;gap:1rem">
+
+    <!-- Upload zone (shown first) -->
+    <div id="invoiceUploadZone">
+      <!-- Distributor select -->
+      <div class="input-wrap" style="margin-bottom:1rem">
+        <label class="input-label">Select Distributor</label>
+        <select class="input-field" id="invoiceDistSelect">
+          <option value="sharma">Sharma Agri Distributors, Indore</option>
+          <option value="jain">Jain Agro Chemicals, Khetgaon</option>
+          <option value="rajhans">Rajhans Fertilizers Co., Ujjain</option>
+        </select>
+      </div>
+      <!-- Drop zone -->
+      <div onclick="triggerInvoiceUpload()" id="invoiceDropZone" style="border:2px dashed rgba(93,214,90,.25);border-radius:1.5rem;background:linear-gradient(145deg,rgba(93,214,90,.03),transparent);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0,rgba(93,214,90,.06),transparent 60%);pointer-events:none"></div>
+        <div style="width:4rem;height:4rem;background:rgba(93,214,90,.1);border:1px solid rgba(93,214,90,.2);border-radius:1.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto .875rem">
+          <span class="material-symbols-outlined icon-fill" style="font-size:2rem;color:var(--green-400)">upload_file</span>
+        </div>
+        <p style="font-family:var(--font-display);font-weight:700;font-size:1rem;margin-bottom:.35rem">Upload Invoice</p>
+        <p style="font-size:.8rem;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.5">Take a photo or upload PDF/image<br>of your distributor invoice</p>
+        <div style="display:flex;gap:.625rem;justify-content:center;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:.35rem;padding:.4rem .875rem;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:9999px;cursor:pointer">
+            <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:#021902">photo_camera</span>
+            <span style="font-size:.8rem;font-weight:700;color:#021902">Camera</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.35rem;padding:.4rem .875rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:9999px">
+            <span class="material-symbols-outlined" style="font-size:.875rem;color:var(--text-secondary)">attach_file</span>
+            <span style="font-size:.8rem;font-weight:600;color:var(--text-secondary)">Browse Files</span>
+          </div>
+        </div>
+        <input type="file" id="invoiceFileInput" accept="image/*,application/pdf" style="display:none" onchange="handleInvoiceFile(event)"/>
+      </div>
+      <!-- AI badge -->
+      <div style="display:flex;align-items:center;gap:.5rem;justify-content:center;margin-top:.875rem">
+        <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">auto_awesome</span>
+        <p style="font-size:.75rem;color:var(--text-secondary)">Powered by <strong style="color:var(--green-400)">Gemini AI</strong> — reads any invoice format</p>
+      </div>
+      <!-- Or use demo invoice -->
+      <div style="display:flex;align-items:center;gap:.5rem;margin-top:.875rem">
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+        <span style="font-size:.68rem;color:var(--text-muted)">or try demo</span>
+        <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      </div>
+      <button onclick="loadDemoInvoice()" class="btn btn-ghost" style="margin-top:.625rem;border-radius:var(--r-md)">
+        <span class="material-symbols-outlined">description</span> Load Demo Invoice
+      </button>
+    </div>
+
+    <!-- Processing state -->
+    <div id="invoiceProcessing" style="display:none;text-align:center;padding:2rem 1rem">
+      <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(93,214,90,.1);border:2px solid rgba(93,214,90,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;position:relative">
+        <div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;border-top-color:var(--green-400);animation:spin 1s linear infinite"></div>
+        <span class="material-symbols-outlined icon-fill" style="font-size:2rem;color:var(--green-400)">auto_awesome</span>
+      </div>
+      <p style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;margin-bottom:.35rem">Gemini Reading Invoice...</p>
+      <div id="processingSteps" style="display:flex;flex-direction:column;gap:.4rem;margin-top:1rem;max-width:280px;margin-left:auto;margin-right:auto"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="invoiceResults" style="display:none;flex-direction:column;gap:1rem">
+      <!-- Header summary card -->
+      <div style="background:linear-gradient(145deg,var(--c-bg-2),var(--c-bg-1));border:1px solid var(--c-border-em);border-radius:var(--r-lg);padding:1rem">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.875rem;padding-bottom:.875rem;border-bottom:1px solid var(--c-border)">
+          <div style="width:3rem;height:3rem;background:rgba(93,214,90,.1);border-radius:.875rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="material-symbols-outlined icon-fill" style="font-size:1.5rem;color:var(--green-400)">description</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <p style="font-weight:700;font-family:var(--font-display)" id="invDistName">Sharma Agri Distributors</p>
+            <p style="font-size:.72rem;color:var(--text-secondary)" id="invInvoiceNo">Invoice #SH-2024-0891 • Aug 12, 2024</p>
+          </div>
+          <div class="chip chip-green" id="invStatusChip">AI Parsed ✓</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;text-align:center">
+          <div>
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Products</p>
+            <p style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text-primary)" id="invProductCount">5</p>
+          </div>
+          <div style="border-left:1px solid var(--c-border);border-right:1px solid var(--c-border)">
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Total Value</p>
+            <p style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text-primary)" id="invTotalValue">₹67,450</p>
+          </div>
+          <div>
+            <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em">Your Cashback</p>
+            <p style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--green-400)" id="invCashback">₹1,180</p>
+          </div>
+        </div>
+        <!-- Tier reward badge -->
+        <div id="invTierBadge" style="margin-top:.875rem;display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:rgba(255,201,64,.08);border:1px solid rgba(255,201,64,.2);border-radius:.625rem">
+          <span style="font-size:.875rem">🥇</span>
+          <p style="font-size:.75rem;color:var(--gold-300);font-weight:600" id="invTierText">Gold Tier Purchase — 1.75% cashback applied</p>
+        </div>
+      </div>
+      <!-- Products list -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.625rem">
+          <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em">Products Found</p>
+          <button onclick="addAllInvoiceProducts()" class="btn-sm btn btn-primary" style="border-radius:9999px;font-size:.7rem;padding:.3rem .875rem;width:auto">Add All to Inventory</button>
+        </div>
+        <div id="invProductList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+      </div>
+      <!-- Actions -->
+      <button onclick="confirmInvoice()" class="btn btn-primary" style="border-radius:var(--r-lg)">
+        <span class="material-symbols-outlined">check_circle</span> Confirm & Update Inventory
+      </button>
+      <button onclick="resetInvoice()" class="btn btn-ghost" style="border-radius:var(--r-lg)">
+        <span class="material-symbols-outlined">refresh</span> Upload Different Invoice
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 8: SELL / SCAN TO SELL
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-sell">
+  <div class="glass" style="flex-shrink:0;padding:.875rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:.875rem">
+        <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span></button>
+        <div><h2 style="font-family:var(--font-display);font-weight:800;font-size:1.1rem">Sell to Customer</h2>
+        <p style="font-size:.68rem;color:var(--text-secondary)">Scan product or select from inventory</p></div>
+      </div>
+      <div class="chip chip-green" id="sellRewardPreview">Earn ₹0</div>
+    </div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;padding:1.25rem;padding-bottom:2rem;display:flex;flex-direction:column;gap:1rem">
+    <!-- Scanner area -->
+    <div style="position:relative;border-radius:1.25rem;overflow:hidden;background:#000;aspect-ratio:4/3;border:1px solid var(--c-border-em)">
+      <div style="position:absolute;inset:0;background:linear-gradient(145deg,#0a1a0a,#050f05);display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center">
+          <div style="width:140px;height:140px;border-radius:50%;background:rgba(93,214,90,.05);border:1px solid rgba(93,214,90,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;position:relative">
+            <span class="material-symbols-outlined icon-fill" style="font-size:3rem;color:rgba(93,214,90,.4)">qr_code_scanner</span>
+            <div style="position:absolute;inset:0;border-radius:50%;border:2px solid var(--green-400);opacity:.4;animation:ping 1.5s ease-out infinite"></div>
+          </div>
+          <p style="font-size:.8rem;color:var(--text-muted)">Camera scanner (demo mode)</p>
+        </div>
+      </div>
+      <!-- Scanner overlay corners -->
+      <div style="position:absolute;top:16px;left:16px;width:28px;height:28px;border-top:3px solid var(--green-400);border-left:3px solid var(--green-400);border-radius:4px 0 0 0"></div>
+      <div style="position:absolute;top:16px;right:16px;width:28px;height:28px;border-top:3px solid var(--green-400);border-right:3px solid var(--green-400);border-radius:0 4px 0 0"></div>
+      <div style="position:absolute;bottom:16px;left:16px;width:28px;height:28px;border-bottom:3px solid var(--green-400);border-left:3px solid var(--green-400);border-radius:0 0 0 4px"></div>
+      <div style="position:absolute;bottom:16px;right:16px;width:28px;height:28px;border-bottom:3px solid var(--green-400);border-right:3px solid var(--green-400);border-radius:0 0 4px 0"></div>
+      <!-- Scan line -->
+      <div style="position:absolute;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,var(--green-400),transparent);box-shadow:0 0 10px var(--green-400);animation:scanLine 2s linear infinite;top:15%"></div>
+    </div>
+
+    <!-- OR select product -->
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="flex:1;height:1px;background:var(--c-border)"></div>
+      <span style="font-size:.68rem;color:var(--text-muted)">or select from inventory</span>
+      <div style="flex:1;height:1px;background:var(--c-border)"></div>
+    </div>
+
+    <!-- Product selector -->
+    <div id="sellProductList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+
+    <!-- Cart summary -->
+    <div id="sellCart" style="display:none;background:var(--c-bg-2);border:1px solid var(--c-border-em);border-radius:var(--r-lg);padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <p style="font-weight:700;font-family:var(--font-display)">Cart</p>
+        <button onclick="clearCart()" style="background:none;border:none;font-size:.75rem;color:#ef4444;cursor:pointer">Clear</button>
+      </div>
+      <div id="cartItems" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.875rem"></div>
+      <div style="border-top:1px solid var(--c-border);padding-top:.625rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700">Total</span>
+        <span style="font-family:var(--font-display);font-weight:800;color:var(--green-400);font-size:1.1rem" id="cartTotal">₹0</span>
+      </div>
+    </div>
+
+    <!-- Customer details -->
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <div class="input-wrap">
+        <label class="input-label">Customer Name</label>
+        <input class="input-field" type="text" placeholder="e.g. Suresh Yadav" id="customerName"/>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">WhatsApp Number (for OTP)</label>
+        <div style="display:flex;gap:.5rem">
+          <div style="padding:.875rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:var(--r-md);font-weight:600;font-size:.85rem;flex-shrink:0">+91</div>
+          <input class="input-field" type="tel" placeholder="9876543210" id="customerPhone" style="flex:1"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reward preview -->
+    <div class="card-green" style="padding:.875rem 1rem;display:flex;align-items:center;gap:.75rem">
+      <span style="font-size:1.5rem">💰</span>
+      <div>
+        <p style="font-size:.78rem;font-weight:700;margin-bottom:.15rem">Your earning on this sale</p>
+        <p style="font-size:1.3rem;font-family:var(--font-display);font-weight:800;color:var(--green-400)" id="sellEarnAmt">₹0</p>
+        <p style="font-size:.65rem;color:var(--text-secondary)">+₹5 bonus on OTP verified sale</p>
+      </div>
+    </div>
+
+    <button onclick="processSale()" class="btn btn-primary" style="border-radius:var(--r-lg)">
+      <span class="material-symbols-outlined">send</span> Process Sale & Send OTP
+    </button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="setNav(this);navigate('s-home')"><span class="material-symbols-outlined">home</span>Home</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-invoice')"><span class="material-symbols-outlined">upload_file</span>Invoice</button>
+    <button class="nav-btn active" onclick="setNav(this)"><span class="material-symbols-outlined">storefront</span>Sell</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-earnings')"><span class="material-symbols-outlined">analytics</span>Earnings</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-inventory')"><span class="material-symbols-outlined">inventory_2</span>Inventory</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 9: EARNINGS DASHBOARD
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-earnings">
+  <div class="glass" style="flex-shrink:0;padding:.875rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;gap:.875rem">
+      <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span></button>
+      <div><h2 style="font-family:var(--font-display);font-weight:800;font-size:1.1rem">Dual Earnings</h2>
+      <p style="font-size:.68rem;color:var(--text-secondary)">Purchase rewards + Sale rewards</p></div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:1.25rem;padding-bottom:2rem;display:flex;flex-direction:column;gap:1rem">
+
+    <!-- Month selector -->
+    <div style="display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.25rem">
+      <div style="padding:.4rem .875rem;background:var(--green-500);color:#021902;border-radius:9999px;font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer">Aug 2024</div>
+      <div style="padding:.4rem .875rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:9999px;font-size:.75rem;color:var(--text-secondary);white-space:nowrap;cursor:pointer">Jul 2024</div>
+      <div style="padding:.4rem .875rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:9999px;font-size:.75rem;color:var(--text-secondary);white-space:nowrap;cursor:pointer">Jun 2024</div>
+    </div>
+
+    <!-- Dual earn summary -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+      <div style="background:linear-gradient(145deg,rgba(93,214,90,.08),rgba(93,214,90,.02));border:1px solid rgba(93,214,90,.2);border-radius:var(--r-lg);padding:1rem;text-align:center">
+        <div style="width:2.5rem;height:2.5rem;background:rgba(93,214,90,.12);border-radius:.75rem;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem">
+          <span class="material-symbols-outlined icon-fill" style="color:var(--green-400)">local_shipping</span>
+        </div>
+        <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Purchase Rewards</p>
+        <p style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;color:var(--green-400)">₹2,156</p>
+        <p style="font-size:.68rem;color:var(--text-secondary)">3 invoices</p>
+      </div>
+      <div style="background:linear-gradient(145deg,rgba(255,201,64,.08),rgba(255,201,64,.02));border:1px solid rgba(255,201,64,.2);border-radius:var(--r-lg);padding:1rem;text-align:center">
+        <div style="width:2.5rem;height:2.5rem;background:rgba(255,201,64,.1);border-radius:.75rem;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem">
+          <span class="material-symbols-outlined icon-fill" style="color:var(--gold-400)">storefront</span>
+        </div>
+        <p style="font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Sale Rewards</p>
+        <p style="font-family:var(--font-display);font-weight:800;font-size:1.35rem;color:var(--gold-300)">₹1,326</p>
+        <p style="font-size:.68rem;color:var(--text-secondary)">73 sales</p>
+      </div>
+    </div>
+
+    <!-- Total + withdraw -->
+    <div style="background:linear-gradient(145deg,var(--c-bg-2),var(--c-bg-1));border:1px solid var(--c-border-em);border-radius:var(--r-lg);padding:1.1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
+        <div>
+          <p style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.2rem">Total This Month</p>
+          <p style="font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--text-primary)">₹3,482</p>
+        </div>
+        <button class="btn btn-gold" style="width:auto;padding:.625rem 1rem;border-radius:var(--r-md);font-size:.85rem" onclick="showToast('₹3,482 transfer initiated to UPI ✓')">
+          <span class="material-symbols-outlined" style="font-size:1rem">send_money</span> Withdraw
+        </button>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill prog-fill-gold" style="width:73%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:.35rem">
+        <span style="font-size:.65rem;color:var(--text-muted)">₹73,450 purchased this month</span>
+        <span style="font-size:.65rem;color:var(--gold-300);font-weight:600">Gold Tier</span>
+      </div>
+    </div>
+
+    <!-- Tier breakdown -->
+    <div style="background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:1rem">
+      <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.875rem">Tier Breakdown</p>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;background:rgba(255,201,64,.07);border:1px solid rgba(255,201,64,.15);border-radius:.625rem">
+          <span style="font-size:1.1rem">🥇</span>
+          <div style="flex:1">
+            <p style="font-size:.8rem;font-weight:700">Gold Tier Active</p>
+            <p style="font-size:.68rem;color:var(--text-secondary)">₹50,000 – ₹99,999 per month</p>
+          </div>
+          <p style="font-family:var(--font-display);font-weight:800;color:var(--gold-300)">1.75%</p>
+        </div>
+        <div style="padding:.625rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:.625rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
+            <span style="font-size:.75rem;color:var(--text-secondary)">Progress to 💎 Diamond (2.5%)</span>
+            <span style="font-size:.75rem;font-weight:700;color:var(--tier-diamond)">73%</span>
+          </div>
+          <div class="prog-track" style="height:8px">
+            <div class="prog-fill" style="width:73%;background:linear-gradient(90deg,var(--gold-400),var(--tier-diamond))"></div>
+          </div>
+          <p style="font-size:.65rem;color:var(--text-muted);margin-top:.35rem">₹26,550 more purchases needed</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction history -->
+    <div>
+      <p style="font-size:.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.625rem">Transaction History</p>
+      <div id="earningsTxList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="setNav(this);navigate('s-home')"><span class="material-symbols-outlined">home</span>Home</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-invoice')"><span class="material-symbols-outlined">upload_file</span>Invoice</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-sell')"><span class="material-symbols-outlined">storefront</span>Sell</button>
+    <button class="nav-btn active" onclick="setNav(this)"><span class="material-symbols-outlined">analytics</span>Earnings</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-inventory')"><span class="material-symbols-outlined">inventory_2</span>Inventory</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 10: INVENTORY MANAGER
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-inventory">
+  <div class="glass" style="flex-shrink:0;padding:.875rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:.875rem">
+        <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span></button>
+        <div><h2 style="font-family:var(--font-display);font-weight:800;font-size:1.1rem">Inventory</h2>
+        <p style="font-size:.68rem;color:var(--text-secondary)" id="invCountLabel">0 products</p></div>
+      </div>
+      <button onclick="navigate('s-invoice')" class="btn-sm btn btn-primary" style="border-radius:9999px;width:auto">
+        <span class="material-symbols-outlined" style="font-size:.875rem">add</span> Add via Invoice
+      </button>
+    </div>
+    <!-- Search -->
+    <div style="position:relative;margin-top:.75rem">
+      <span class="material-symbols-outlined" style="position:absolute;left:.875rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text-muted)">search</span>
+      <input class="input-field" type="text" placeholder="Search products..." id="invSearch" style="padding-left:2.75rem;padding-top:.625rem;padding-bottom:.625rem" oninput="filterInventory(this.value)"/>
+    </div>
+    <!-- Category filters -->
+    <div style="display:flex;gap:.4rem;margin-top:.625rem;overflow-x:auto;padding-bottom:.2rem">
+      <button onclick="filterInventoryCategory('all',this)" class="inv-filter-btn active" style="padding:.3rem .75rem;border-radius:9999px;background:var(--green-500);color:#021902;border:none;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">All</button>
+      <button onclick="filterInventoryCategory('Fertilizer',this)" class="inv-filter-btn" style="padding:.3rem .75rem;border-radius:9999px;background:var(--c-bg-3);color:var(--text-secondary);border:1px solid var(--c-border);font-size:.72rem;cursor:pointer;white-space:nowrap">Fertilizer</button>
+      <button onclick="filterInventoryCategory('Pesticide',this)" class="inv-filter-btn" style="padding:.3rem .75rem;border-radius:9999px;background:var(--c-bg-3);color:var(--text-secondary);border:1px solid var(--c-border);font-size:.72rem;cursor:pointer;white-space:nowrap">Pesticide</button>
+      <button onclick="filterInventoryCategory('Seed',this)" class="inv-filter-btn" style="padding:.3rem .75rem;border-radius:9999px;background:var(--c-bg-3);color:var(--text-secondary);border:1px solid var(--c-border);font-size:.72rem;cursor:pointer;white-space:nowrap">Seeds</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:1rem 1.25rem;padding-bottom:2rem">
+    <div id="inventoryList" style="display:flex;flex-direction:column;gap:.625rem"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="setNav(this);navigate('s-home')"><span class="material-symbols-outlined">home</span>Home</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-invoice')"><span class="material-symbols-outlined">upload_file</span>Invoice</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-sell')"><span class="material-symbols-outlined">storefront</span>Sell</button>
+    <button class="nav-btn" onclick="setNav(this);navigate('s-earnings')"><span class="material-symbols-outlined">analytics</span>Earnings</button>
+    <button class="nav-btn active" onclick="setNav(this)"><span class="material-symbols-outlined">inventory_2</span>Inventory</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 11: AI ASSISTANT
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-assistant">
+  <div class="glass" style="flex-shrink:0;padding:.875rem 1.25rem;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--c-border)">
+    <div style="display:flex;align-items:center;gap:.875rem">
+      <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.1rem">arrow_back</span></button>
+      <div style="flex:1">
+        <h2 style="font-family:var(--font-display);font-weight:800;font-size:1.1rem">CounterOS AI</h2>
+        <div style="display:flex;align-items:center;gap:.375rem">
+          <div class="glow-dot" style="width:6px;height:6px"></div>
+          <p style="font-size:.68rem;color:var(--green-400)">Powered by Gemini 1.5 Flash</p>
+        </div>
+      </div>
+      <button onclick="clearChat()" class="btn-icon" title="Clear chat">
+        <span class="material-symbols-outlined" style="font-size:1rem">refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div style="flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem" id="chatMessages">
+    <!-- Initial AI message injected by JS -->
+  </div>
+
+  <!-- Quick prompts -->
+  <div style="padding:.625rem 1.25rem;display:flex;gap:.4rem;overflow-x:auto;border-top:1px solid var(--c-border);flex-shrink:0" id="quickPrompts">
+    <button onclick="sendQuickPrompt(this.textContent)" style="padding:.35rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:9999px;font-size:.72rem;color:var(--text-secondary);cursor:pointer;white-space:nowrap;font-family:var(--font-body)">My top products?</button>
+    <button onclick="sendQuickPrompt(this.textContent)" style="padding:.35rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:9999px;font-size:.72rem;color:var(--text-secondary);cursor:pointer;white-space:nowrap;font-family:var(--font-body)">How to reach Diamond?</button>
+    <button onclick="sendQuickPrompt(this.textContent)" style="padding:.35rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:9999px;font-size:.72rem;color:var(--text-secondary);cursor:pointer;white-space:nowrap;font-family:var(--font-body)">What should I reorder?</button>
+    <button onclick="sendQuickPrompt(this.textContent)" style="padding:.35rem .75rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:9999px;font-size:.72rem;color:var(--text-secondary);cursor:pointer;white-space:nowrap;font-family:var(--font-body)">This month earnings?</button>
+  </div>
+
+  <!-- Input -->
+  <div style="padding:.75rem 1.25rem;border-top:1px solid var(--c-border);display:flex;gap:.625rem;flex-shrink:0;background:var(--c-bg)">
+    <input class="input-field" type="text" id="chatInput" placeholder="Ask anything about your business..." style="flex:1;padding:.75rem 1rem;border-radius:var(--r-lg)" onkeydown="if(event.key==='Enter')sendChatMessage()"/>
+    <button onclick="sendChatMessage()" style="width:2.75rem;height:2.75rem;border-radius:var(--r-md);background:linear-gradient(135deg,var(--green-400),var(--green-600));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+      <span class="material-symbols-outlined icon-fill" style="font-size:1.1rem;color:#021902">send</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 12: SALE SUCCESS
+═══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-sale-success">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(93,214,90,.12),transparent 70%);pointer-events:none"></div>
+    <div class="anim-spring" style="position:relative;width:6rem;height:6rem;margin-bottom:1.5rem">
+      <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(93,214,90,.2);animation:ping 2s ease-out infinite"></div>
+      <div style="width:100%;height:100%;background:linear-gradient(135deg,var(--green-400),var(--green-600));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 48px rgba(93,214,90,.3)">
+        <span class="material-symbols-outlined icon-fill" style="font-size:3rem;color:#021902">check_circle</span>
+      </div>
+    </div>
+    <h2 class="anim-fadeup d1" style="font-family:var(--font-display);font-size:2rem;font-weight:800;margin-bottom:.35rem">Sale Complete!</h2>
+    <p class="anim-fadeup d2" style="font-size:.9rem;color:var(--text-secondary);margin-bottom:1.75rem" id="saleSuccessMsg">Reward credited to your wallet</p>
+    <div class="anim-spring d2" style="background:var(--c-bg-2);border:1px solid rgba(93,214,90,.2);border-radius:var(--r-lg);padding:1.25rem;width:100%;max-width:300px;margin-bottom:1.75rem">
+      <p style="font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem">You Earned</p>
+      <p style="font-family:var(--font-display);font-weight:800;font-size:2.5rem;color:var(--green-400)" id="saleEarnedAmt">+₹23</p>
+      <p style="font-size:.75rem;color:var(--text-secondary);margin-top:.25rem" id="saleSummaryLine">Credited to your wallet</p>
+    </div>
+    <button class="btn btn-primary anim-fadeup d4" onclick="navigate('s-home')" style="max-width:300px;width:100%;border-radius:var(--r-lg)">
+      <span class="material-symbols-outlined">home</span> Back to Dashboard
+    </button>
+    <button onclick="navigate('s-sell')" style="background:none;border:none;color:var(--text-muted);font-size:.82rem;cursor:pointer;margin-top:.875rem;padding:.5rem">
+      Make another sale →
+    </button>
+  </div>
+</div>
+
+</div><!-- end .app-shell -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 1. CONFIG & GEMINI SERVICE
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Gemini Configuration ──
+const GEMINI_API_KEY = "AIzaSyCP_0VbUN5msITQm3z7erOZAvqygdbFMZw";
+const GEMINI_BASE    = "https://generativelanguage.googleapis.com/v1beta/models";
+const GEMINI_MODEL   = "gemini-1.5-flash";
+
+const GeminiService = {
+  async generate(prompt, systemInstruction = null) {
+    const body = {
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+    };
+    if (systemInstruction) {
+      body.system_instruction = { parts: [{ text: systemInstruction }] };
+    }
+    try {
+      const res = await fetch(
+        `${GEMINI_BASE}/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      );
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch (e) {
+      console.error('Gemini error:', e);
+      return null;
+    }
+  },
+
+  async generateWithImage(prompt, imageBase64, mimeType = 'image/jpeg') {
+    const body = {
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inline_data: { mime_type: mimeType, data: imageBase64 } }
+        ]
+      }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+    };
+    try {
+      const res = await fetch(
+        `${GEMINI_BASE}/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      );
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch (e) {
+      console.error('Gemini vision error:', e);
+      return null;
+    }
+  },
+
+  async generateJSON(prompt, schema) {
+    const fullPrompt = `${prompt}\n\nRespond ONLY with valid JSON matching this schema:\n${JSON.stringify(schema, null, 2)}\n\nNo markdown, no explanation, just the JSON.`;
+    const raw = await this.generate(fullPrompt);
+    if (!raw) return null;
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      return JSON.parse(clean);
+    } catch {
+      // Try extracting JSON from response
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (match) {
+        try { return JSON.parse(match[0]); } catch { return null; }
+      }
+      return null;
+    }
+  },
+
+  async generateWelcomeMessage(shopName, ownerName, location, category, linkedDistributors) {
+    const prompt = `Write a short, warm, professional welcome message for a new retailer joining CounterOS platform. Keep it under 60 words, encouraging, specific to their situation. No generic greetings.
+
+Retailer details:
+- Name: ${ownerName}
+- Shop: ${shopName}  
+- Location: ${location || 'India'}
+- Category: ${category || 'Agri Input Dealer'}
+- Linked distributors: ${linkedDistributors || 0}
+
+The platform helps retailers earn cashback on distributor purchases (up to 2.5%) and rewards on customer sales. Make it feel personal and exciting.`;
+
+    return await this.generate(prompt);
+  },
+
+  async suggestDistributors(location, category) {
+    const prompt = `Generate a list of 4 realistic Indian agricultural distributor companies that would serve a ${category || 'agri input dealer'} in ${location || 'Madhya Pradesh'}. 
+
+Return JSON array with these fields for each:
+- name: company name (realistic Indian agri distributor)
+- city: city they operate from
+- products: main product categories (array of 2-3 items)
+- rating: number between 3.8 and 4.9
+- distance: distance in km (1-45)
+- emoji: relevant emoji
+
+Make the names sound like real Indian agri distributors (e.g., "Sharma Agri Distributors", "MP Krishi Vaahan Pvt Ltd", etc.)`;
+
+    const schema = [{
+      name: "string", city: "string", products: ["string"],
+      rating: 4.2, distance: 12, emoji: "🌾"
+    }];
+    return await this.generateJSON(prompt, schema);
+  }
+};
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 2. APP STATE
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+const APP = {
+  // Onboarding state
+  onboarding: {
+    phone: '',
+    shopName: '',
+    ownerName: '',
+    category: 'agri',
+    gst: '',
+    location: '',
+    locationCoords: '',
+    payMethod: 'upi',
+    linkedDistributors: [],
+  },
+  // Navigation
+  screenHistory: [],
+  currentScreen: 's-login',
+  // Toast timer
+  _toastTimer: null,
+};
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 3. NAVIGATION ENGINE
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function navigate(id, isBack = false) {
+  const screens = document.querySelectorAll('.screen');
+  const currentEl = [...screens].find(s => s.classList.contains('active'));
+
+  if (currentEl && currentEl.id !== id) {
+    if (!isBack) APP.screenHistory.push(currentEl.id);
+  }
+
+  screens.forEach(s => {
+    s.classList.remove('active', 'screen-enter', 'screen-enter-back', 'screen-fade');
+  });
+
+  const next = document.getElementById(id);
+  if (!next) { console.warn('Screen not found:', id); return; }
+
+  next.classList.add('active');
+  next.classList.add(isBack ? 'screen-enter-back' : 'screen-enter');
+  APP.currentScreen = id;
+  next.scrollTop = 0;
+
+  // Run entry hook
+  onEnter(id);
+}
+
+function goBack() {
+  if (APP.screenHistory.length > 0) {
+    const prev = APP.screenHistory.pop();
+    navigate(prev, true);
+  } else {
+    navigate('s-login', true);
+  }
+}
+
+function onEnter(id) {
+  if (id === 's-distributor') initDistributorScreen();
+  if (id === 's-ready')       initReadyScreen();
+}
+
+function showToast(msg, duration = 2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('show');
+  clearTimeout(APP._toastTimer);
+  void t.offsetWidth; // reflow
+  t.classList.add('show');
+  APP._toastTimer = setTimeout(() => t.classList.remove('show'), duration);
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 4. SCREEN 1: LOGIN LOGIC
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function otpAdvance(el, nextId) {
+  if (el.value) {
+    el.classList.add('filled');
+    if (nextId) document.getElementById(nextId)?.focus();
+  } else {
+    el.classList.remove('filled');
+  }
+}
+
+function handleSendOTP() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (phone.length < 10 && phone !== '') {
+    showToast('⚠️ Enter a valid 10-digit number');
+    return;
+  }
+  const displayPhone = phone || '98765 43210';
+  APP.onboarding.phone = displayPhone;
+
+  document.getElementById('loginPhasePhone').style.display = 'none';
+  document.getElementById('loginPhaseOTP').style.display = 'block';
+  document.getElementById('otpSentTo').textContent = `Sent to +91 ${displayPhone}`;
+  document.getElementById('o1').focus();
+  showToast('📱 OTP sent! Demo: 1234');
+}
+
+function loginPhoneBack() {
+  document.getElementById('loginPhaseOTP').style.display = 'none';
+  document.getElementById('loginPhasePhone').style.display = 'block';
+}
+
+function handleVerifyOTP() {
+  const otp = ['o1','o2','o3','o4'].map(id => document.getElementById(id).value).join('');
+  if (otp === '1234' || otp.length === 4) {
+    showToast('✅ Login successful!');
+    setTimeout(() => navigate('s-shop-setup'), 600);
+  } else {
+    showToast('❌ Wrong OTP. Demo code: 1234');
+    ['o1','o2','o3','o4'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = ''; el.classList.remove('filled');
+      el.style.borderColor = '#ef4444';
+      setTimeout(() => el.style.borderColor = '', 1500);
+    });
+    document.getElementById('o1').focus();
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 5. SCREEN 2: SHOP SETUP LOGIC
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+let selectedCategory = 'agri';
+
+function selectCategory(cat) {
+  selectedCategory = cat;
+  const cats = ['agri', 'kirana', 'chemical'];
+  cats.forEach(c => {
+    const card  = document.getElementById(`cat-${c}`);
+    const check = document.getElementById(`cat-${c}-check`);
+    if (c === cat) {
+      card.classList.add('selected');
+      check.textContent = 'check_circle';
+      check.classList.add('icon-fill');
+      check.style.color = 'var(--green-400)';
+    } else {
+      card.classList.remove('selected');
+      check.textContent = 'radio_button_unchecked';
+      check.classList.remove('icon-fill');
+      check.style.color = 'var(--text-muted)';
+    }
+  });
+}
+
+// GPS location
+const DEMO_LOCATIONS = [
+  { name: 'Khetgaon, Madhya Pradesh',  coords: '23.4587° N, 76.9318° E' },
+  { name: 'Indore, Madhya Pradesh',     coords: '22.7196° N, 75.8577° E' },
+  { name: 'Bhopal, Madhya Pradesh',     coords: '23.2599° N, 77.4126° E' },
+  { name: 'Nagpur, Maharashtra',        coords: '21.1458° N, 79.0882° E' },
+  { name: 'Ludhiana, Punjab',           coords: '30.9010° N, 75.8573° E' },
+  { name: 'Hisar, Haryana',             coords: '29.1492° N, 75.7217° E' },
+];
+
+function fetchLocation() {
+  const btn     = document.getElementById('locationBtn');
+  const icon    = document.getElementById('locationBtnIcon');
+  const title   = document.getElementById('locationBtnTitle');
+  const sub     = document.getElementById('locationBtnSub');
+  btn.style.opacity = '.6'; btn.style.pointerEvents = 'none';
+  icon.innerHTML = '<span class="material-symbols-outlined anim-spin" style="font-size:1rem;color:var(--green-400)">sync</span>';
+  title.textContent = 'Detecting...';
+
+  function showLocation(name, coords) {
+    btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+    icon.innerHTML = '<span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">location_on</span>';
+    title.textContent = 'Location Detected ✓';
+    title.style.color = 'var(--green-400)';
+    sub.textContent = 'Tap to re-detect';
+    btn.style.borderColor = 'rgba(93,214,90,.4)';
+    btn.style.background = 'rgba(93,214,90,.08)';
+
+    const card = document.getElementById('locationCard');
+    document.getElementById('locationName').textContent = name;
+    document.getElementById('locationCoords').textContent = coords;
+    card.style.display = 'flex';
+    document.getElementById('locationManual').value = name;
+
+    APP.onboarding.location = name;
+    APP.onboarding.locationCoords = coords;
+    showToast('📍 Location detected!');
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const demo = DEMO_LOCATIONS[Math.floor(Math.random() * DEMO_LOCATIONS.length)];
+        showLocation(demo.name, `${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E`);
+      },
+      () => {
+        const demo = DEMO_LOCATIONS[Math.floor(Math.random() * DEMO_LOCATIONS.length)];
+        showLocation(demo.name, demo.coords);
+      },
+      { timeout: 5000 }
+    );
+  } else {
+    const demo = DEMO_LOCATIONS[Math.floor(Math.random() * DEMO_LOCATIONS.length)];
+    showLocation(demo.name, demo.coords);
+  }
+}
+
+function clearLocation() {
+  document.getElementById('locationCard').style.display = 'none';
+  document.getElementById('locationManual').value = '';
+  document.getElementById('locationBtnTitle').textContent = 'Detect My Location';
+  document.getElementById('locationBtnTitle').style.color = 'var(--green-400)';
+  document.getElementById('locationBtnSub').textContent = 'Tap to auto-detect via GPS';
+  document.getElementById('locationBtnIcon').innerHTML = '<span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:var(--green-400)">my_location</span>';
+  const btn = document.getElementById('locationBtn');
+  btn.style.borderColor = 'rgba(93,214,90,.3)';
+  btn.style.background = 'rgba(93,214,90,.05)';
+  btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+  APP.onboarding.location = '';
+}
+
+function handleShopSetup() {
+  const name  = document.getElementById('shopName').value.trim();
+  const owner = document.getElementById('ownerName').value.trim();
+  const loc   = document.getElementById('locationManual').value.trim() || APP.onboarding.location;
+
+  if (!name) { showToast('⚠️ Enter your shop name'); return; }
+  if (!owner) { showToast('⚠️ Enter owner name'); return; }
+
+  APP.onboarding.shopName  = name;
+  APP.onboarding.ownerName = owner;
+  APP.onboarding.category  = selectedCategory;
+  APP.onboarding.gst       = document.getElementById('gstNumber').value.trim();
+  APP.onboarding.location  = loc || 'India';
+
+  navigate('s-distributor');
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 6. SCREEN 3: DISTRIBUTOR LOGIC (Gemini-powered)
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+let allDistributors = [];
+let linkedDistributors = [];
+
+async function initDistributorScreen() {
+  // Reset state
+  document.getElementById('distAiBar').style.display = 'flex';
+  document.getElementById('distAiText').textContent = 'AI finding distributors near your area...';
+  document.getElementById('distResults').innerHTML = '';
+
+  // Show skeletons while loading
+  renderDistributorSkeletons();
+
+  // Call Gemini to get suggested distributors
+  const location = APP.onboarding.location || 'Madhya Pradesh';
+  const category = APP.onboarding.category;
+
+  const suggestions = await GeminiService.suggestDistributors(location, category);
+
+  // Hide AI bar
+  document.getElementById('distAiBar').style.display = 'none';
+
+  if (suggestions && Array.isArray(suggestions)) {
+    allDistributors = suggestions;
+    renderDistributorResults(suggestions);
+    document.getElementById('distAiText').textContent = `Found ${suggestions.length} distributors near ${location.split(',')[0]}`;
+  } else {
+    // Fallback
+    allDistributors = FALLBACK_DISTRIBUTORS;
+    renderDistributorResults(FALLBACK_DISTRIBUTORS);
+  }
+}
+
+const FALLBACK_DISTRIBUTORS = [
+  { name: 'Sharma Agri Distributors', city: 'Indore', products: ['Fertilizers', 'Seeds', 'Pesticides'], rating: 4.7, distance: 12, emoji: '🌾' },
+  { name: 'MP Krishi Vaahan Pvt Ltd', city: 'Bhopal', products: ['Agri Chemicals', 'Equipment'], rating: 4.3, distance: 28, emoji: '🚜' },
+  { name: 'Jain Agro Chemicals',       city: 'Khetgaon', products: ['Pesticides', 'Herbicides'], rating: 4.5, distance: 5, emoji: '🧪' },
+  { name: 'Rajhans Fertilizers Co.',   city: 'Ujjain', products: ['Fertilizers', 'Micronutrients'], rating: 4.2, distance: 35, emoji: '🌱' },
+];
+
+function renderDistributorSkeletons() {
+  const el = document.getElementById('distResults');
+  el.innerHTML = [1,2,3].map(() => `
+    <div style="display:flex;align-items:center;gap:.875rem;padding:.875rem 1rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+      <div class="skeleton" style="width:2.75rem;height:2.75rem;border-radius:var(--r-sm);flex-shrink:0"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:.4rem">
+        <div class="skeleton" style="height:.875rem;width:60%"></div>
+        <div class="skeleton" style="height:.75rem;width:40%"></div>
+      </div>
+      <div class="skeleton" style="width:3rem;height:1.5rem;border-radius:9999px"></div>
+    </div>
+  `).join('');
+}
+
+function renderDistributorResults(distributors) {
+  const el = document.getElementById('distResults');
+  el.innerHTML = distributors.map((d, i) => {
+    const isLinked = linkedDistributors.some(ld => ld.name === d.name);
+    return `
+      <div class="dist-result ${isLinked ? 'linked' : ''} anim-fadeup d${Math.min(i+1,5)}"
+           id="dist-${i}" onclick="toggleDistributor(${i})">
+        <div class="dist-avatar" style="background:var(--c-bg-3);border:1px solid var(--c-border)">
+          ${d.emoji || '🏢'}
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font-weight:700;font-size:.875rem;margin-bottom:.2rem" class="truncate">${d.name}</p>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+            <span style="font-size:.7rem;color:var(--text-muted)">📍 ${d.city}</span>
+            <span style="font-size:.7rem;color:var(--text-muted)">• ${d.distance}km</span>
+            <span style="font-size:.7rem;color:var(--gold-400)">⭐ ${d.rating}</span>
+          </div>
+          <div style="display:flex;gap:.3rem;margin-top:.3rem;flex-wrap:wrap">
+            ${(d.products || []).slice(0,2).map(p =>
+              `<span style="font-size:.6rem;padding:.15rem .4rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:9999px;color:var(--text-secondary)">${p}</span>`
+            ).join('')}
+          </div>
+        </div>
+        <button style="background:${isLinked ? 'rgba(93,214,90,.15)' : 'var(--c-bg-3)'};border:1px solid ${isLinked ? 'rgba(93,214,90,.3)' : 'var(--c-border-em)'};border-radius:var(--r-sm);padding:.4rem .7rem;cursor:pointer;color:${isLinked ? 'var(--green-400)' : 'var(--text-secondary)'};font-size:.75rem;font-weight:700;font-family:var(--font-display);flex-shrink:0;display:flex;align-items:center;gap:.25rem;transition:all .2s" id="dist-btn-${i}">
+          ${isLinked
+            ? '<span class="material-symbols-outlined" style="font-size:.875rem">check</span>Linked'
+            : '<span class="material-symbols-outlined" style="font-size:.875rem">add</span>Link'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleDistributor(idx) {
+  const dist    = allDistributors[idx];
+  const card    = document.getElementById(`dist-${idx}`);
+  const btn     = document.getElementById(`dist-btn-${idx}`);
+  const already = linkedDistributors.findIndex(d => d.name === dist.name);
+
+  if (already === -1) {
+    linkedDistributors.push(dist);
+    card.classList.add('linked');
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:.875rem">check</span>Linked';
+    btn.style.background = 'rgba(93,214,90,.15)';
+    btn.style.borderColor = 'rgba(93,214,90,.3)';
+    btn.style.color = 'var(--green-400)';
+    showToast(`✅ ${dist.name} linked!`);
+  } else {
+    linkedDistributors.splice(already, 1);
+    card.classList.remove('linked');
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:.875rem">add</span>Link';
+    btn.style.background = 'var(--c-bg-3)';
+    btn.style.borderColor = 'var(--c-border-em)';
+    btn.style.color = 'var(--text-secondary)';
+    showToast(`Distributor unlinked`);
+  }
+  APP.onboarding.linkedDistributors = linkedDistributors;
+}
+
+function searchDistributors(query) {
+  if (!query.trim()) {
+    renderDistributorResults(allDistributors);
+    return;
+  }
+  const filtered = allDistributors.filter(d =>
+    d.name.toLowerCase().includes(query.toLowerCase()) ||
+    d.city.toLowerCase().includes(query.toLowerCase())
+  );
+  renderDistributorResults(filtered.length ? filtered : allDistributors);
+}
+
+function handleDistributorNext() {
+  APP.onboarding.linkedDistributors = linkedDistributors;
+  navigate('s-payout');
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 7. SCREEN 4: PAYOUT LOGIC
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+let selectedPayMethod = 'upi';
+
+function selectPayMethod(method) {
+  selectedPayMethod = method;
+  const methods = ['upi', 'bank'];
+  methods.forEach(m => {
+    const card  = document.getElementById(`pay-${m}`);
+    const check = document.getElementById(`pay-${m}-check`);
+    if (m === method) {
+      card.classList.add('selected');
+      check.textContent = 'check_circle'; check.classList.add('icon-fill'); check.style.color = 'var(--green-400)';
+    } else {
+      card.classList.remove('selected');
+      check.textContent = 'radio_button_unchecked'; check.classList.remove('icon-fill'); check.style.color = 'var(--text-muted)';
+    }
+  });
+  document.getElementById('formUPI').style.display  = method === 'upi'  ? 'flex' : 'none';
+  document.getElementById('formBank').style.display = method === 'bank' ? 'flex' : 'none';
+  if (method === 'bank') document.getElementById('formBank').style.flexDirection = 'column';
+}
+
+function handlePayoutNext() {
+  APP.onboarding.payMethod = selectedPayMethod;
+  navigate('s-ready');
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 8. SCREEN 5: READY / AI WELCOME
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+async function initReadyScreen() {
+  // Update ready screen with user data
+  const ownerFirst = (APP.onboarding.ownerName || 'there').split(' ')[0];
+  document.getElementById('readyName').textContent = ownerFirst + '!';
+  document.getElementById('readyDistCount').textContent =
+    (APP.onboarding.linkedDistributors?.length || 0) + ' linked';
+
+  // Fire confetti
+  setTimeout(() => startConfetti(), 300);
+
+  // Get AI welcome message
+  const text = await GeminiService.generateWelcomeMessage(
+    APP.onboarding.shopName,
+    APP.onboarding.ownerName,
+    APP.onboarding.location,
+    APP.onboarding.category,
+    APP.onboarding.linkedDistributors?.length
+  );
+
+  const dotsEl = document.getElementById('aiLoadingDots');
+  const textEl = document.getElementById('aiWelcomeText');
+
+  dotsEl.style.display = 'none';
+  textEl.style.display = 'block';
+
+  if (text) {
+    // Typewriter effect
+    textEl.textContent = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      textEl.textContent += text[i] || '';
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 18);
+  } else {
+    textEl.textContent = `Welcome to CounterOS, ${ownerFirst}! Your retailer account is ready. Start by uploading your first distributor invoice to add products and begin earning purchase rewards.`;
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 9. CONFETTI
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function startConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const shell = document.getElementById('appShell');
+  canvas.width  = shell.offsetWidth;
+  canvas.height = shell.offsetHeight;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const colors = ['#7ef27b','#ffc940','#90d5ff','#f0f5f0','#5dd65a','#e6a800','#a8f7a6'];
+  const pieces = Array.from({ length: 80 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height,
+    w: 5 + Math.random() * 8,
+    h: 4 + Math.random() * 5,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    vx: (Math.random() - .5) * 3,
+    vy: 2.5 + Math.random() * 3,
+    rot: Math.random() * Math.PI * 2,
+    rv: (Math.random() - .5) * .15,
+    op: 1,
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.rv;
+      if (frame > 50) p.op -= .013;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.op);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 130) requestAnimationFrame(draw);
+    else canvas.style.display = 'none';
+  }
+  draw();
+}
+</script>
+
+</body>
+</html>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 10. APP STATE — INVENTORY & TRANSACTIONS
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Inventory State ──
+const INV = {
+  products: [
+    { id:1, name:'IFFCO DAP 18:46:0',      cat:'Fertilizer', unit:'50kg bag', qty:20, buyPrice:1200, sellPrice:1350, icon:'grass',    color:'#7ef27b', margin:12.5, earning:13.50 },
+    { id:2, name:'Urea 46% N',              cat:'Fertilizer', unit:'50kg bag', qty:35, buyPrice:240,  sellPrice:267,  icon:'eco',      color:'#a8f7a6', margin:11.25,earning:2.67  },
+    { id:3, name:'Gromor Amino Acid 40%',   cat:'Pesticide',  unit:'1L bottle',qty:8,  buyPrice:280,  sellPrice:320,  icon:'science',  color:'#90d5ff', margin:14.3, earning:3.20  },
+    { id:4, name:'Corteva Delegate 11.7%',  cat:'Pesticide',  unit:'250ml',    qty:5,  buyPrice:720,  sellPrice:845,  icon:'biotech',  color:'#ffd976', margin:17.4, earning:8.45  },
+    { id:5, name:'PM Kisan Hybrid Seeds',   cat:'Seed',       unit:'1kg pack', qty:50, buyPrice:150,  sellPrice:180,  icon:'spa',      color:'#86efac', margin:20,   earning:1.80  },
+    { id:6, name:'Chlorpyrifos 20% EC',     cat:'Pesticide',  unit:'500ml',    qty:12, buyPrice:380,  sellPrice:435,  icon:'water_drop',color:'#f9a8d4',margin:14.5, earning:4.35  },
+  ],
+  nextId: 7,
+  add(p) {
+    p.id = this.nextId++;
+    p.earning = +(p.sellPrice * 0.01).toFixed(2);
+    this.products.unshift(p);
+    renderAll();
+  }
+};
+
+// ── Transactions ──
+const TXNS = [
+  { type:'purchase', label:'Sharma Agri Distributors',  sub:'Invoice #SH-0891 • 5 products', date:'Today, 2:30 PM',  amt:'+₹1,180', color:'#7ef27b', icon:'local_shipping' },
+  { type:'sale',     label:'Sale to Suresh Yadav',       sub:'IFFCO DAP × 2 bags',            date:'Today, 11:20 AM', amt:'+₹27',    color:'#ffc940', icon:'storefront'     },
+  { type:'sale',     label:'Sale to Ramesh Patel',       sub:'Urea 46% × 5 bags',             date:'Yesterday, 3:45 PM',amt:'+₹13.35',color:'#ffc940',icon:'storefront'    },
+  { type:'purchase', label:'Jain Agro Chemicals',        sub:'Invoice #JA-0341 • 3 products', date:'Aug 10',          amt:'+₹620',   color:'#7ef27b', icon:'local_shipping' },
+  { type:'sale',     label:'Sale to Prakash Singh',      sub:'Gromor Amino Acid × 2',         date:'Aug 9',           amt:'+₹6.40',  color:'#ffc940', icon:'storefront'     },
+  { type:'withdraw', label:'Withdrawal to UPI',          sub:'ramesh@okicici',                date:'Aug 8',           amt:'-₹2,000', color:'#ef4444', icon:'send_money'     },
+];
+
+// ── Cart State ──
+let cart = [];
+
+// ── Invoice parsed products (Gemini result) ──
+let parsedInvoiceProducts = [];
+
+// ── Chat history ──
+let chatHistory = [];
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 11. RENDER FUNCTIONS
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function renderAll() {
+  renderHomeActivity();
+  renderHomeInvoices();
+  renderHomeProducts();
+  renderInventory(INV.products);
+  renderSellProducts();
+  renderEarningsTx();
+  updateInvCount();
+}
+
+function renderHomeActivity() {
+  const el = document.getElementById('homeActivityList');
+  if (!el) return;
+  const items = TXNS.slice(0,3);
+  el.innerHTML = items.map(t => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+      <div style="width:2.25rem;height:2.25rem;background:rgba(255,255,255,.04);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:${t.color}">${t.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.label}</p>
+        <p style="font-size:.68rem;color:var(--text-muted)">${t.date}</p>
+      </div>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:.875rem;color:${t.color};flex-shrink:0">${t.amt}</span>
+    </div>
+  `).join('');
+}
+
+function renderHomeInvoices() {
+  const el = document.getElementById('homeInvoiceList');
+  if (!el) return;
+  const invoices = [
+    { dist:'Sharma Agri Distributors', date:'Aug 12', products:5, value:'₹67,450', cashback:'₹1,180', tier:'Gold' },
+    { dist:'Jain Agro Chemicals',      date:'Aug 10', products:3, value:'₹18,240', cashback:'₹319',   tier:'Silver' },
+  ];
+  el.innerHTML = invoices.map(inv => `
+    <div onclick="navigate('s-invoice')" style="display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md);cursor:pointer">
+      <div style="width:2.25rem;height:2.25rem;background:rgba(93,214,90,.08);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">description</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${inv.dist}</p>
+        <p style="font-size:.68rem;color:var(--text-muted)">${inv.date} • ${inv.products} products • ${inv.value}</p>
+      </div>
+      <span style="font-size:.82rem;font-weight:700;color:var(--green-400);flex-shrink:0">${inv.cashback}</span>
+    </div>
+  `).join('');
+}
+
+function renderHomeProducts() {
+  const el = document.getElementById('homeProductList');
+  if (!el) return;
+  INV.products.slice(0,3).forEach((p,i) => {
+    // create element with animation delay
+  });
+  el.innerHTML = INV.products.slice(0,3).map((p,i) => `
+    <div onclick="navigate('s-sell')" style="display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md);cursor:pointer">
+      <div style="width:2.5rem;height:2.5rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:1.1rem;color:${p.color}">${p.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p>
+        <p style="font-size:.68rem;color:var(--text-muted)">${p.unit} • ${p.qty} in stock</p>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <p style="font-size:.875rem;font-weight:700;color:var(--green-400)">₹${p.sellPrice}</p>
+        <p style="font-size:.65rem;color:var(--text-muted)">earn ₹${p.earning}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderInventory(products) {
+  const el = document.getElementById('inventoryList');
+  if (!el) return;
+  if (products.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:3rem 1rem">
+      <span class="material-symbols-outlined" style="font-size:3rem;color:var(--text-muted)">inventory_2</span>
+      <p style="color:var(--text-secondary);margin-top:.75rem">No products yet.<br>Upload an invoice to add products.</p>
+      <button onclick="navigate('s-invoice')" class="btn btn-primary" style="margin-top:1.25rem;width:auto;padding:.75rem 1.5rem;border-radius:var(--r-lg)">Upload Invoice</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML = products.map((p,i) => `
+    <div style="background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:.875rem 1rem;display:flex;align-items:center;gap:.875rem;animation:fadeUp .35s ${i*0.04}s both">
+      <div style="width:3rem;height:3rem;background:var(--c-bg-3);border:1px solid var(--c-border);border-radius:.875rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:1.35rem;color:${p.color}">${p.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-weight:700;font-size:.875rem;font-family:var(--font-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p>
+        <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.2rem">
+          <span style="font-size:.65rem;padding:.1rem .45rem;background:var(--c-bg-3);border-radius:9999px;color:var(--text-secondary)">${p.cat}</span>
+          <span style="font-size:.65rem;color:var(--text-muted)">${p.unit}</span>
+          <span style="font-size:.65rem;color:${p.qty < 5 ? '#ef4444':'var(--text-muted)'}">${p.qty} in stock${p.qty < 5 ? ' ⚠️':''}</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <p style="font-weight:700;font-family:var(--font-display);color:var(--text-primary)">₹${p.sellPrice}</p>
+        <p style="font-size:.65rem;color:var(--green-400)">earn ₹${p.earning}</p>
+        <p style="font-size:.6rem;color:var(--text-muted)">buy ₹${p.buyPrice}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSellProducts() {
+  const el = document.getElementById('sellProductList');
+  if (!el) return;
+  el.innerHTML = INV.products.filter(p=>p.qty>0).map(p => `
+    <div onclick="addToCart(${p.id})" style="display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md);cursor:pointer;transition:all .15s">
+      <div style="width:2.25rem;height:2.25rem;background:var(--c-bg-3);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:1rem;color:${p.color}">${p.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p>
+        <p style="font-size:.68rem;color:var(--text-muted)">${p.unit} • ${p.qty} left</p>
+      </div>
+      <div style="text-align:right">
+        <p style="font-size:.875rem;font-weight:700;color:var(--text-primary)">₹${p.sellPrice}</p>
+        <p style="font-size:.65rem;color:var(--green-400)">earn ₹${p.earning}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderEarningsTx() {
+  const el = document.getElementById('earningsTxList');
+  if (!el) return;
+  el.innerHTML = TXNS.map(t => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md)">
+      <div style="width:2.25rem;height:2.25rem;background:rgba(255,255,255,.04);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:${t.color}">${t.icon}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.label}</p>
+        <p style="font-size:.65rem;color:var(--text-muted)">${t.sub}</p>
+        <p style="font-size:.6rem;color:var(--text-muted);opacity:.7">${t.date}</p>
+      </div>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:.875rem;color:${t.color};flex-shrink:0">${t.amt}</span>
+    </div>
+  `).join('');
+}
+
+function updateInvCount() {
+  const el = document.getElementById('invCountLabel');
+  if (el) el.textContent = INV.products.length + ' products';
+}
+
+function filterInventory(q) {
+  const filtered = INV.products.filter(p =>
+    p.name.toLowerCase().includes(q.toLowerCase()) ||
+    p.cat.toLowerCase().includes(q.toLowerCase())
+  );
+  renderInventory(filtered);
+}
+
+function filterInventoryCategory(cat, btn) {
+  document.querySelectorAll('.inv-filter-btn').forEach(b => {
+    b.style.background = 'var(--c-bg-3)';
+    b.style.color = 'var(--text-secondary)';
+    b.style.border = '1px solid var(--c-border)';
+  });
+  btn.style.background = 'var(--green-500)';
+  btn.style.color = '#021902';
+  btn.style.border = 'none';
+  const filtered = cat === 'all' ? INV.products : INV.products.filter(p => p.cat === cat);
+  renderInventory(filtered);
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 12. INVOICE UPLOAD & GEMINI PARSING
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function triggerInvoiceUpload() {
+  document.getElementById('invoiceFileInput').click();
+}
+
+async function handleInvoiceFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Convert to base64
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result.split(',')[1];
+    const mime   = file.type || 'image/jpeg';
+    await runGeminiInvoiceParse(base64, mime, file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadDemoInvoice() {
+  // Use a realistic demo without actual image
+  await runGeminiInvoiceParseDemoText();
+}
+
+// Processing step animation
+let stepTimer;
+function animateProcessingSteps(steps) {
+  const el = document.getElementById('processingSteps');
+  if (!el) return;
+  el.innerHTML = '';
+  let i = 0;
+  stepTimer = setInterval(() => {
+    if (i >= steps.length) { clearInterval(stepTimer); return; }
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:.5rem;padding:.35rem .625rem;background:rgba(93,214,90,.06);border:1px solid rgba(93,214,90,.12);border-radius:.5rem;animation:fadeUp .3s both';
+    div.innerHTML = `<span class="material-symbols-outlined icon-fill" style="font-size:.875rem;color:var(--green-400)">check_circle</span><span style="font-size:.78rem;color:var(--text-secondary)">${steps[i]}</span>`;
+    el.appendChild(div);
+    i++;
+  }, 600);
+}
+
+async function runGeminiInvoiceParse(base64, mime, filename) {
+  // Show processing
+  document.getElementById('invoiceUploadZone').style.display  = 'none';
+  document.getElementById('invoiceProcessing').style.display  = 'block';
+  document.getElementById('invoiceResults').style.display     = 'none';
+
+  const steps = ['Reading distributor name...','Scanning product list...','Extracting quantities & prices...','Calculating purchase rewards...','Matching product database...'];
+  animateProcessingSteps(steps);
+
+  const prompt = `You are an AI that reads Indian agricultural distributor invoices. Extract all product information from this invoice image.
+
+Return ONLY a JSON object with this exact structure (no markdown, no explanation):
+{
+  "distributor_name": "company name",
+  "invoice_number": "invoice number or 'N/A'",
+  "invoice_date": "date as string",
+  "total_value": 0,
+  "products": [
+    {
+      "name": "product name",
+      "category": "Fertilizer or Pesticide or Seed or Equipment or Other",
+      "quantity": 0,
+      "unit": "unit like kg, litre, pack, bag",
+      "unit_price": 0,
+      "total_price": 0
+    }
+  ]
+}
+
+If this is not an invoice or you cannot read it, return realistic demo invoice data for an Indian agri distributor with 3-5 products.`;
+
+  const result = await GeminiService.generateWithImage(prompt, base64, mime);
+  clearInterval(stepTimer);
+
+  if (result) {
+    try {
+      const clean = result.replace(/```json|```/g, '').trim();
+      const match = clean.match(/\{[\s\S]*\}/);
+      const data  = match ? JSON.parse(match[0]) : null;
+      if (data && data.products) {
+        showInvoiceResults(data, filename);
+        return;
+      }
+    } catch(e) { console.log('Parse error:', e); }
+  }
+  // Fallback to demo
+  showDemoInvoiceResults(filename);
+}
+
+async function runGeminiInvoiceParseDemoText() {
+  document.getElementById('invoiceUploadZone').style.display = 'none';
+  document.getElementById('invoiceProcessing').style.display = 'block';
+  document.getElementById('invoiceResults').style.display    = 'none';
+
+  const steps = ['Reading distributor details...','Finding products in invoice...','Extracting quantities & prices...','Calculating 1.75% Gold cashback...','Estimating sale earnings...'];
+  animateProcessingSteps(steps);
+
+  const prompt = `Generate a realistic Indian agricultural distributor invoice data in JSON format. Simulate an invoice from "Sharma Agri Distributors" in Indore to a retailer. Include 5 products commonly sold to agri input dealers in Madhya Pradesh.
+
+Return ONLY this JSON structure:
+{
+  "distributor_name": "Sharma Agri Distributors",
+  "invoice_number": "SH-2024-0891",
+  "invoice_date": "12 Aug 2024",
+  "total_value": 67450,
+  "products": [
+    { "name": "product name", "category": "Fertilizer or Pesticide or Seed", "quantity": 10, "unit": "50kg bag", "unit_price": 1350, "total_price": 13500 }
+  ]
+}`;
+
+  const result = await GeminiService.generateJSON(prompt, {});
+  clearInterval(stepTimer);
+
+  if (result && result.products) {
+    showInvoiceResults(result, 'Demo_Invoice.pdf');
+  } else {
+    showDemoInvoiceResults('Demo_Invoice.pdf');
+  }
+}
+
+function showDemoInvoiceResults(filename) {
+  const demo = {
+    distributor_name: 'Sharma Agri Distributors',
+    invoice_number: 'SH-2024-0891',
+    invoice_date: '12 Aug 2024',
+    total_value: 67450,
+    products: [
+      { name:'IFFCO DAP 18:46:0',     category:'Fertilizer', quantity:20, unit:'50kg bag', unit_price:1350, total_price:27000 },
+      { name:'Urea 46% N',            category:'Fertilizer', quantity:30, unit:'50kg bag', unit_price:267,  total_price:8010  },
+      { name:'Chlorpyrifos 20% EC',   category:'Pesticide',  quantity:10, unit:'500ml',    unit_price:435,  total_price:4350  },
+      { name:'Gromor Amino Acid 40%', category:'Pesticide',  quantity:8,  unit:'1L bottle',unit_price:320,  total_price:2560  },
+      { name:'PM Kisan Hybrid Seeds', category:'Seed',       quantity:150,unit:'1kg pack', unit_price:180,  total_price:27000 },
+    ]
+  };
+  showInvoiceResults(demo, filename || 'Invoice.pdf');
+}
+
+function showInvoiceResults(data, filename) {
+  document.getElementById('invoiceProcessing').style.display = 'none';
+  const resultsEl = document.getElementById('invoiceResults');
+  resultsEl.style.display = 'flex';
+
+  parsedInvoiceProducts = data.products || [];
+
+  // Determine tier & cashback
+  const total    = data.total_value || parsedInvoiceProducts.reduce((s,p) => s + (p.total_price||0), 0);
+  let tierPct = 0, tierName = 'Bronze', tierEmoji = '🥉';
+  if (total >= 100000) { tierPct = 2.5; tierName='Diamond'; tierEmoji='💎'; }
+  else if (total >= 50000) { tierPct = 1.75; tierName='Gold'; tierEmoji='🥇'; }
+  else if (total >= 10000) { tierPct = 1.0; tierName='Silver'; tierEmoji='🥈'; }
+  const cashback = +(total * tierPct / 100).toFixed(0);
+
+  // Update header
+  document.getElementById('invDistName').textContent    = data.distributor_name || 'Distributor';
+  document.getElementById('invInvoiceNo').textContent   = `Invoice #${data.invoice_number||'N/A'} • ${data.invoice_date||''}`;
+  document.getElementById('invProductCount').textContent = parsedInvoiceProducts.length;
+  document.getElementById('invTotalValue').textContent  = '₹' + total.toLocaleString('en-IN');
+  document.getElementById('invCashback').textContent    = tierPct > 0 ? '₹' + cashback.toLocaleString('en-IN') : 'None';
+  document.getElementById('invTierText').textContent    = tierPct > 0
+    ? `${tierEmoji} ${tierName} Tier Purchase — ${tierPct}% cashback applied`
+    : '🥉 Bronze Tier — Minimum ₹10,000 needed for rewards';
+
+  // Render products
+  const listEl = document.getElementById('invProductList');
+  listEl.innerHTML = parsedInvoiceProducts.map((p, i) => {
+    const saleEarn = +((p.unit_price||0) * 0.01).toFixed(2);
+    return `
+    <div style="background:var(--c-bg-2);border:1px solid var(--c-border);border-radius:var(--r-md);padding:.875rem;display:flex;gap:.75rem;align-items:center;animation:fadeUp .35s ${i*0.06}s both" id="invp-${i}">
+      <div style="width:2.5rem;height:2.5rem;background:var(--c-bg-3);border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="material-symbols-outlined icon-fill" style="font-size:1.1rem;color:${getCatColor(p.category)}">${getCatIcon(p.category)}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-weight:700;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p>
+        <p style="font-size:.68rem;color:var(--text-muted)">${p.quantity} ${p.unit} × ₹${p.unit_price} = <strong style="color:var(--text-primary)">₹${(p.total_price||p.quantity*p.unit_price).toLocaleString('en-IN')}</strong></p>
+        <p style="font-size:.65rem;color:var(--green-400)">Earn ₹${saleEarn}/unit on resale</p>
+      </div>
+      <button id="invp-btn-${i}" onclick="addSingleInvProduct(${i})" style="background:rgba(93,214,90,.1);border:1px solid rgba(93,214,90,.25);border-radius:.5rem;padding:.35rem .7rem;cursor:pointer;color:var(--green-400);font-size:.72rem;font-weight:700;flex-shrink:0;display:flex;align-items:center;gap:.25rem;transition:all .2s;font-family:var(--font-display)">
+        <span class="material-symbols-outlined" style="font-size:.875rem">add</span>Add
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function addSingleInvProduct(i) {
+  const p   = parsedInvoiceProducts[i];
+  const btn = document.getElementById(`invp-btn-${i}`);
+  const row = document.getElementById(`invp-${i}`);
+  if (!p || btn.dataset.done) return;
+  btn.dataset.done = '1';
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:.875rem">check</span>Added';
+  btn.style.background = 'rgba(93,214,90,.2)';
+  btn.style.borderColor = 'rgba(93,214,90,.4)';
+  row.style.borderColor = 'rgba(93,214,90,.2)';
+  row.style.background  = 'rgba(93,214,90,.04)';
+  INV.add({ name:p.name, cat:p.category||'Other', unit:p.unit, qty:p.quantity, buyPrice:p.unit_price, sellPrice:+(p.unit_price*1.12).toFixed(0), icon:getCatIcon(p.category), color:getCatColor(p.category) });
+}
+
+function addAllInvoiceProducts() {
+  parsedInvoiceProducts.forEach((_,i) => setTimeout(() => addSingleInvProduct(i), i*180));
+}
+
+function confirmInvoice() {
+  addAllInvoiceProducts();
+  setTimeout(() => {
+    showToast('✅ Invoice confirmed! Inventory updated. Cashback pending verification.');
+    navigate('s-home');
+  }, parsedInvoiceProducts.length * 180 + 400);
+}
+
+function resetInvoice() {
+  document.getElementById('invoiceUploadZone').style.display  = 'block';
+  document.getElementById('invoiceProcessing').style.display  = 'none';
+  document.getElementById('invoiceResults').style.display     = 'none';
+  document.getElementById('invoiceFileInput').value = '';
+  parsedInvoiceProducts = [];
+}
+
+function getCatIcon(cat) {
+  const icons = { Fertilizer:'grass', Pesticide:'science', Seed:'spa', Equipment:'handyman', Other:'inventory_2' };
+  return icons[cat] || 'inventory_2';
+}
+function getCatColor(cat) {
+  const colors = { Fertilizer:'#7ef27b', Pesticide:'#90d5ff', Seed:'#a8f7a6', Equipment:'#ffd976', Other:'#8a9e8a' };
+  return colors[cat] || '#8a9e8a';
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 13. SELL / CART LOGIC
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function addToCart(productId) {
+  const p = INV.products.find(x => x.id === productId);
+  if (!p) return;
+  const existing = cart.find(c => c.id === productId);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...p, qty: 1 }); }
+  updateCartUI();
+  showToast(`✅ ${p.name.split(' ').slice(0,3).join(' ')} added to cart`);
+}
+
+function clearCart() {
+  cart = [];
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const cartEl   = document.getElementById('sellCart');
+  const itemsEl  = document.getElementById('cartItems');
+  const totalEl  = document.getElementById('cartTotal');
+  const earnEl   = document.getElementById('sellEarnAmt');
+  const previewEl= document.getElementById('sellRewardPreview');
+
+  if (cart.length === 0) {
+    cartEl.style.display = 'none';
+    earnEl.textContent   = '₹0';
+    previewEl.textContent= 'Earn ₹0';
+    return;
+  }
+  cartEl.style.display = 'block';
+  const total  = cart.reduce((s,c) => s + c.sellPrice * c.qty, 0);
+  const earned = cart.reduce((s,c) => s + c.earning * c.qty, 0);
+  itemsEl.innerHTML = cart.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem">
+      <span class="truncate" style="flex:1;max-width:60%">${c.name.split(' ').slice(0,4).join(' ')}</span>
+      <span style="color:var(--text-muted);margin:0 .5rem">×${c.qty}</span>
+      <span style="font-weight:600">₹${(c.sellPrice*c.qty).toLocaleString('en-IN')}</span>
+    </div>
+  `).join('');
+  totalEl.textContent   = '₹' + total.toLocaleString('en-IN');
+  earnEl.textContent    = '₹' + (+earned.toFixed(2)).toLocaleString('en-IN');
+  previewEl.textContent = 'Earn ₹' + (+earned.toFixed(2)).toLocaleString('en-IN');
+}
+
+function processSale() {
+  if (cart.length === 0) { showToast('⚠️ Add at least one product to cart'); return; }
+  const name  = document.getElementById('customerName').value.trim();
+  const phone = document.getElementById('customerPhone').value.trim();
+  if (!name)  { showToast('⚠️ Enter customer name'); return; }
+  if (!phone) { showToast('⚠️ Enter customer WhatsApp number'); return; }
+
+  const earned = cart.reduce((s,c) => s + c.earning * c.qty, 0) + 5; // +5 OTP bonus
+  const total  = cart.reduce((s,c) => s + c.sellPrice * c.qty, 0);
+
+  // Deduct from inventory
+  cart.forEach(c => {
+    const p = INV.products.find(x => x.id === c.id);
+    if (p) p.qty -= c.qty;
+  });
+
+  // Update UI
+  document.getElementById('saleEarnedAmt').textContent  = '+₹' + (+earned.toFixed(2)).toLocaleString('en-IN');
+  document.getElementById('saleSuccessMsg').textContent = `OTP sent to ${name} — ${cart[0].name.split(' ').slice(0,3).join(' ')} and ${cart.length} item(s)`;
+  document.getElementById('saleSummaryLine').textContent= `Sale: ₹${total.toLocaleString('en-IN')} • Customer: ${name}`;
+
+  // Add to transaction history
+  TXNS.unshift({
+    type:'sale', label:`Sale to ${name}`, sub:`${cart[0].name.split(' ').slice(0,3).join(' ')} × ${cart.reduce((s,c)=>s+c.qty,0)} items`,
+    date:'Just now', amt:`+₹${(+earned.toFixed(2))}`, color:'#ffc940', icon:'storefront'
+  });
+
+  cart = [];
+  updateCartUI();
+  renderAll();
+  startConfetti();
+  navigate('s-sale-success');
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 14. AI ASSISTANT (GEMINI CHAT)
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+const CHAT_SYSTEM = `You are CounterOS AI, a smart business assistant for Indian agri-retailers. You help retailers understand their earnings, inventory, and growth strategies on the CounterOS platform.
+
+The retailer's current data:
+- Shop: Ramesh Agro Traders, Khetgaon, Madhya Pradesh
+- Current tier: Gold (₹50,000–₹99,999/month purchase = 1.75% cashback)
+- This month purchases: ₹73,450 from 2 distributors
+- This month purchase cashback: ₹2,156
+- This month sale rewards: ₹1,326 (73 sales)
+- Total wallet: ₹3,482
+- Inventory: ${INV ? INV.products.length : 6} products
+- Top seller: IFFCO DAP 18:46:0
+
+Platform rules:
+- Purchase rewards: Silver (₹10K-₹50K) = 1%, Gold (₹50K-₹1L) = 1.75%, Diamond (₹1L+) = 2.5%
+- Sale rewards: 1% of sale value + ₹5 OTP bonus per verified sale
+- Both reward streams credited to same UPI/bank account
+
+Be concise, specific, data-driven. Use rupee symbols. Max 120 words per response. Speak like a knowledgeable business advisor, not a generic chatbot.`;
+
+function initChat() {
+  chatHistory = [];
+  const el = document.getElementById('chatMessages');
+  if (!el) return;
+  el.innerHTML = '';
+  addChatBubble('ai', `Namaste! 👋 I'm your CounterOS AI. Your wallet is at **₹3,482** this month — ₹2,156 from purchases (Gold tier 1.75%) + ₹1,326 from 73 sales.\n\nYou need **₹26,550 more in purchases** to hit Diamond tier (2.5% cashback). Want me to show you how?`, true);
+}
+
+function addChatBubble(role, text, isFirst = false) {
+  const el   = document.getElementById('chatMessages');
+  if (!el) return;
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `display:flex;${role==='user'?'justify-content:flex-end':''};animation:fadeUp .3s both`;
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `max-width:85%;padding:.75rem .875rem;border-radius:${role==='user'?'1rem 1rem .25rem 1rem':'1rem 1rem 1rem .25rem'};font-size:.82rem;line-height:1.6;${role==='user'?'background:var(--green-600);color:#021902;':'background:var(--c-bg-3);border:1px solid var(--c-border-em);color:var(--text-primary);'}`;
+  // Simple markdown: **bold**
+  bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g,'<br>');
+  wrap.appendChild(bubble);
+  el.appendChild(wrap);
+  el.scrollTop = el.scrollHeight;
+}
+
+function addTypingIndicator() {
+  const el   = document.getElementById('chatMessages');
+  const wrap = document.createElement('div');
+  wrap.id = 'typingIndicator';
+  wrap.style.cssText = 'display:flex;animation:fadeUp .3s both';
+  wrap.innerHTML = `<div style="padding:.75rem .875rem;background:var(--c-bg-3);border:1px solid var(--c-border-em);border-radius:1rem 1rem 1rem .25rem">
+    <div class="ai-thinking-dots"><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div></div>
+  </div>`;
+  el.appendChild(wrap);
+  el.scrollTop = el.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  document.getElementById('typingIndicator')?.remove();
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  // Hide quick prompts after first message
+  document.getElementById('quickPrompts').style.display = 'none';
+  addChatBubble('user', msg);
+  addTypingIndicator();
+
+  chatHistory.push({ role:'user', parts:[{ text: msg }] });
+
+  // Build conversation for Gemini
+  const body = {
+    system_instruction: { parts: [{ text: CHAT_SYSTEM }] },
+    contents: chatHistory,
+    generationConfig: { temperature: 0.7, maxOutputTokens: 300 }
+  };
+
+  try {
+    const res  = await fetch(`${GEMINI_BASE}/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm having trouble connecting right now. Please try again.";
+    chatHistory.push({ role:'model', parts:[{ text: reply }] });
+    removeTypingIndicator();
+    addChatBubble('ai', reply);
+  } catch(e) {
+    removeTypingIndicator();
+    addChatBubble('ai', "Connection issue. Please check your internet and try again.");
+  }
+}
+
+function sendQuickPrompt(text) {
+  document.getElementById('chatInput').value = text;
+  sendChatMessage();
+}
+
+function clearChat() { initChat(); document.getElementById('quickPrompts').style.display = 'flex'; }
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 15. HOME SCREEN AI INSIGHT
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+async function loadHomeAIInsight() {
+  const loaderEl = document.getElementById('homeInsightLoader');
+  const textEl   = document.getElementById('homeInsightText');
+  if (!loaderEl || !textEl) return;
+
+  const prompt = `Give a concise, actionable business insight for this Indian agri-retailer in exactly 2 sentences. Be specific with numbers.
+
+Retailer data:
+- Gold tier: ₹73,450 purchased this month, needs ₹26,550 more for Diamond (2.5%)
+- Best selling product: IFFCO DAP 18:46:0 (₹13.50 earn per bag)
+- Stock alert: Corteva Delegate has only 5 units left
+- 73 sales made this month
+
+Give ONE specific recommendation that would most increase their earnings this month.`;
+
+  const result = await GeminiService.generate(prompt);
+  loaderEl.style.display = 'none';
+  textEl.style.display   = 'block';
+
+  if (result) {
+    textEl.textContent = result;
+  } else {
+    textEl.textContent = 'Reorder Corteva Delegate — only 5 units left and it earns ₹8.45/unit. A single invoice of ₹26,550 from your distributor will unlock Diamond tier (2.5% cashback) this month.';
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 16. NAVIGATION UTILITIES & STYLES
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+function setNav(btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Override onEnter to include main app screens
+const _baseOnEnter = onEnter;
+function onEnter(id) {
+  _baseOnEnter(id);
+  if (id === 's-home') {
+    renderAll();
+    // Update greeting
+    const name = APP.onboarding?.ownerName?.split(' ')[0] || 'Ramesh';
+    const loc  = APP.onboarding?.location || 'Khetgaon, MP';
+    const el   = document.getElementById('homeGreeting');
+    const eloc = document.getElementById('homeLocation');
+    if (el)   el.textContent  = `Namaste, ${name}! 👋`;
+    if (eloc) eloc.textContent= loc.split(',')[0];
+    // Load AI insight (non-blocking)
+    loadHomeAIInsight();
+  }
+  if (id === 's-inventory') { renderInventory(INV.products); updateInvCount(); }
+  if (id === 's-sell')      { renderSellProducts(); updateCartUI(); }
+  if (id === 's-earnings')  { renderEarningsTx(); }
+  if (id === 's-assistant') { initChat(); }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 17. EXTRA STYLES (Quick action hover, misc)
+═══════════════════════════════════════════════════════════════════ -->
+<style>
+.qa-btn:hover { background:var(--c-bg-3)!important; border-color:var(--c-border-em)!important; transform:translateY(-2px); }
+.qa-btn:active { transform:scale(.94)!important; }
+.dist-result:hover { background:var(--c-bg-3)!important; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JS — 18. INITIALISE ON DOM READY
+═══════════════════════════════════════════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll();
+});
+</script>

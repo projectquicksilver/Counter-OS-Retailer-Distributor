@@ -27,14 +27,27 @@
   --r4:.4rem; --r6:.6rem; --r8:.8rem; --r12:1.2rem; --r16:1.6rem;
 }
 [data-theme="light"] {
-  --bg0:#f0f5f0; --bg1:#e8f0e8; --bg2:#ddeadd; --bg3:#cfdecf; --bg4:#bfd3bf;
-  --bdr:rgba(0,0,0,.09); --bdr2:rgba(0,0,0,.16);
-  --t1:#0d1f0d; --t2:#3a5a3a; --t3:#7a9a7a; --ta:#2a9627;
-  --g4:#2a9627; --g5:#228020; --g6:#1a6018; --gg:rgba(42,150,39,.14);
-  --o4:#c88000; --o5:#a86800; --og:rgba(168,104,0,.12);
-  --td:#1a6aaa; --ts:#5a6a7a; --tb:#8a5020; --tg:#c88000;
-  --card:rgba(220,235,220,.9); --inp:#e0ecde; --sh:0 4px 20px rgba(0,0,0,.12);
+  --bg0:#f2f7f2; --bg1:#eaf2ea; --bg2:#ddeadd; --bg3:#ccdccc; --bg4:#b8ccb8;
+  --bdr:rgba(0,0,0,.10); --bdr2:rgba(0,0,0,.18);
+  --t1:#0d1f0d; --t2:#3a5a3a; --t3:#6a8a6a; --ta:#1a7a18;
+  --g4:#1a7a18; --g5:#158014; --g6:#0e600d; --gg:rgba(26,122,24,.14);
+  --o4:#a06000; --o5:#886000; --og:rgba(136,96,0,.12);
+  --td:#1a6aaa; --ts:#5a6a7a; --tb:#8a5020; --tg:#a06000;
+  --card:rgba(215,235,215,.95); --inp:#dde8dd; --sh:0 4px 20px rgba(0,0,0,.1);
 }
+/* Light theme specific overrides for hardcoded colors */
+[data-theme="light"] .screen{background:var(--bg0)}
+[data-theme="light"] .ghead{background:rgba(240,247,240,.95);border-bottom-color:var(--bdr)}
+[data-theme="light"] .bnav{background:rgba(240,247,240,.95)}
+[data-theme="light"] .cbubble-ai{background:var(--bg3);border-color:var(--bdr2);color:var(--t1)}
+[data-theme="light"] .cbubble-user{background:var(--g6);color:#fff}
+[data-theme="light"] #toast{background:var(--bg4);color:var(--t1)}
+[data-theme="light"] .otp-box{background:var(--inp);border-color:var(--bdr2);color:var(--t1)}
+[data-theme="light"] .otp-box.filled{background:rgba(26,122,24,.06)}
+[data-theme="light"] input,
+[data-theme="light"] select{color:var(--t1)!important}
+[data-theme="light"] .btn-primary{color:#fff!important}
+[data-theme="light"] .btn-ghost{color:var(--t1)!important}
 
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 html{height:100%;background:#000;font-size:16px;overflow:hidden}
@@ -367,47 +380,69 @@ select.ifield{appearance:none;cursor:pointer}
      SCREEN: SHOP SETUP (Onboarding 1)
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-shop-setup">
-  <div class="ghead" style="padding:.9rem 1.25rem .75rem">
+  <div class="ghead" style="flex-shrink:0;padding:.9rem 1.1rem .75rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
       <button class="btn-back" onclick="navigate('s-login',true)"><span class="material-symbols-outlined" style="font-size:1.05rem">arrow_back</span></button>
       <div style="display:flex;gap:.38rem"><div class="odot act"></div><div class="odot todo"></div><div class="odot todo"></div><div class="odot todo"></div></div>
       <div class="chip chip-dim">1 of 4</div>
     </div>
   </div>
-  <div class="scroller" style="padding:1.25rem 1.25rem 2.5rem;display:flex;flex-direction:column;gap:1.1rem">
+  <div class="scroller" style="padding:1rem 1.1rem 2rem;display:flex;flex-direction:column;gap:.9rem">
     <div class="au">
-      <div style="display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.7rem">
+      <div style="display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.65rem">
         <div style="width:1.6rem;height:1.6rem;background:rgba(120,242,117,.1);border-radius:.5rem;display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined fi" style="font-size:.9rem;color:var(--g4)">storefront</span></div>
         <span style="font-size:.7rem;font-weight:700;color:var(--g4);text-transform:uppercase;letter-spacing:.1em">Shop Details</span>
       </div>
-      <h2 style="font-size:1.65rem;font-weight:800;line-height:1.15;letter-spacing:-.03em;margin-bottom:.35rem">Tell us about<br>your shop</h2>
-      <p style="font-size:.82rem;color:var(--t2);line-height:1.55">We use this to match distributors and calculate your rewards accurately.</p>
+      <h2 style="font-size:1.5rem;font-weight:800;line-height:1.15;letter-spacing:-.03em;margin-bottom:.3rem">Tell us about<br>your shop</h2>
+      <p style="font-size:.8rem;color:var(--t2);line-height:1.5">Match distributors and calculate rewards accurately.</p>
     </div>
-    <div class="au d1" style="display:flex;flex-direction:column;gap:.875rem">
-      <div><label class="ilabel">Shop Name *</label><input class="ifield" type="text" id="shopName" value="Ramesh Agro Traders" placeholder="e.g. Ramesh Agro Traders"/></div>
+    <div class="au d1" style="display:flex;flex-direction:column;gap:.8rem">
+      <div><label class="ilabel">Shop Name *</label><input class="ifield" type="text" id="shopName" value="Ramesh Agro Traders" placeholder="e.g. Ramesh General Store"/></div>
       <div><label class="ilabel">Owner Name *</label><input class="ifield" type="text" id="ownerName" value="Ramesh Kumar Sharma" placeholder="Full name"/></div>
+      <!-- 6 domain categories in 2-col grid -->
       <div>
-        <label class="ilabel">Category *</label>
-        <div style="display:flex;flex-direction:column;gap:.45rem">
-          <div class="selopt sel" id="cat-agri" onclick="selCat('agri')">
-            <div style="width:2.75rem;height:2.75rem;background:rgba(120,242,117,.08);border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem">🌱</div>
-            <div style="flex:1"><p style="font-weight:700;font-size:.88rem">Agri Input Dealer</p><p style="font-size:.7rem;color:var(--t2)">Seeds, fertilizers, pesticides</p></div>
-            <span class="material-symbols-outlined fi" style="color:var(--g4);font-size:1rem" id="ck-agri">check_circle</span>
+        <label class="ilabel">Business Category *</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem" id="catGrid">
+          <div class="selopt sel" id="cat-agri" onclick="selCat('agri')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">🌱</div>
+            <p style="font-weight:700;font-size:.82rem">Agri Retailer</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Seeds, fertilizers, pesticides</p>
+            <span class="material-symbols-outlined fi" style="color:var(--g4);font-size:.85rem;margin-top:.3rem" id="ck-agri">check_circle</span>
           </div>
-          <div class="selopt" id="cat-kirana" onclick="selCat('kirana')">
-            <div style="width:2.75rem;height:2.75rem;background:rgba(255,208,96,.07);border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem">🛒</div>
-            <div style="flex:1"><p style="font-weight:700;font-size:.88rem">General Kirana</p><p style="font-size:.7rem;color:var(--t2)">Mixed retail store</p></div>
-            <span class="material-symbols-outlined" style="color:var(--t3);font-size:1rem" id="ck-kirana">radio_button_unchecked</span>
+          <div class="selopt" id="cat-food" onclick="selCat('food')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">🍱</div>
+            <p style="font-weight:700;font-size:.82rem">Food & Grocery</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">FMCG, packaged foods, dairy</p>
+            <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-food">radio_button_unchecked</span>
           </div>
-          <div class="selopt" id="cat-chem" onclick="selCat('chem')">
-            <div style="width:2.75rem;height:2.75rem;background:rgba(160,210,255,.07);border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem">🧪</div>
-            <div style="flex:1"><p style="font-weight:700;font-size:.88rem">Fertilizer & Chemical</p><p style="font-size:.7rem;color:var(--t2)">Agri chemicals specialist</p></div>
-            <span class="material-symbols-outlined" style="color:var(--t3);font-size:1rem" id="ck-chem">radio_button_unchecked</span>
+          <div class="selopt" id="cat-pharma" onclick="selCat('pharma')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">💊</div>
+            <p style="font-weight:700;font-size:.82rem">Pharmacy</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Medicines, health products</p>
+            <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-pharma">radio_button_unchecked</span>
+          </div>
+          <div class="selopt" id="cat-hardware" onclick="selCat('hardware')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">🔧</div>
+            <p style="font-weight:700;font-size:.82rem">Hardware & Tools</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Building, electrical, tools</p>
+            <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-hardware">radio_button_unchecked</span>
+          </div>
+          <div class="selopt" id="cat-textile" onclick="selCat('textile')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">👗</div>
+            <p style="font-weight:700;font-size:.82rem">Textile & Fashion</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Clothing, fabric, accessories</p>
+            <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-textile">radio_button_unchecked</span>
+          </div>
+          <div class="selopt" id="cat-electronics" onclick="selCat('electronics')" style="padding:.75rem;border-radius:var(--r8)">
+            <div style="font-size:1.4rem;margin-bottom:.3rem">📱</div>
+            <p style="font-weight:700;font-size:.82rem">Electronics</p>
+            <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Mobile, gadgets, appliances</p>
+            <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-electronics">radio_button_unchecked</span>
           </div>
         </div>
       </div>
-      <div><label class="ilabel">GST Number</label>
-        <div style="position:relative"><input class="ifield" type="text" id="gstNum" value="27RAMP1234F1ZV" placeholder="Optional" style="font-family:var(--fm);font-size:.82rem;padding-right:5.5rem"/>
+      <div><label class="ilabel">GST Number <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(Optional)</span></label>
+        <div style="position:relative"><input class="ifield" type="text" id="gstNum" value="27RAMP1234F1ZV" placeholder="27XXXX..." style="font-family:var(--fm);font-size:.82rem;padding-right:5.5rem"/>
         <div style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%)"><div class="chip chip-g" style="font-size:.58rem">✓ Verified</div></div></div>
       </div>
       <!-- GPS Location -->
@@ -431,7 +466,10 @@ select.ifield{appearance:none;cursor:pointer}
         <div style="position:relative"><span class="material-symbols-outlined" style="position:absolute;left:.875rem;top:50%;transform:translateY(-50%);font-size:.95rem;color:var(--t3)">edit_location</span><input class="ifield" type="text" id="locManual" placeholder="Village, District, State" style="padding-left:2.6rem"/></div>
       </div>
     </div>
-    <button class="btn btn-primary au d2" onclick="handleShopSetup()">Continue <span class="material-symbols-outlined">arrow_forward</span></button>
+    <!-- Same btn style as other screens -->
+    <button class="btn btn-primary" onclick="handleShopSetup()" style="border-radius:var(--r12)">
+      Continue <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
   </div>
 </div>
 
@@ -956,11 +994,11 @@ select.ifield{appearance:none;cursor:pointer}
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem">
-      <button onclick="openCart()" class="btn btn-ghost" style="border-radius:var(--r12);position:relative">
+      <button onclick="navigate('s-cart')" class="btn btn-ghost" style="border-radius:var(--r12);position:relative">
         <span class="material-symbols-outlined fi">shopping_cart</span> View Cart
         <div id="cartBadge" style="position:absolute;top:6px;right:8px;background:var(--g4);color:#021302;font-size:.6rem;font-weight:800;padding:.1rem .35rem;border-radius:9999px;display:none" id="cartCountBadge">0</div>
       </button>
-      <button onclick="openCart()" class="btn btn-primary" style="border-radius:var(--r12)"><span class="material-symbols-outlined">send</span> Checkout</button>
+      <button onclick="navigate('s-cart')" class="btn btn-primary" style="border-radius:var(--r12)"><span class="material-symbols-outlined">send</span> Checkout</button>
     </div>
   </div>
   <div class="bnav">
@@ -1170,6 +1208,154 @@ select.ifield{appearance:none;cursor:pointer}
   </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════
+     SCREEN: WALLET — ADD MONEY & WITHDRAW
+══════════════════════════════════════════ -->
+<div class="screen" id="s-wallet">
+  <div class="ghead" style="flex-shrink:0;padding:.875rem 1.1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.05rem">arrow_back</span></button>
+        <div><h2 style="font-size:1.05rem;font-weight:800">My Wallet</h2><p style="font-size:.65rem;color:var(--t2)">Add money, withdraw earnings</p></div>
+      </div>
+      <div class="chip chip-gold" id="walletTierChip">🥇 Gold</div>
+    </div>
+  </div>
+  <div class="scroller" style="padding:1rem 1.1rem;padding-bottom:2rem;display:flex;flex-direction:column;gap:.875rem">
+
+    <!-- Balance hero -->
+    <div style="position:relative;background:linear-gradient(135deg,#0d1f0e,#091209);border:1px solid rgba(120,242,117,.18);border-radius:var(--r16);padding:1.5rem;overflow:hidden;text-align:center">
+      <div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(120,242,117,.1),transparent 70%);pointer-events:none"></div>
+      <div style="position:relative;width:4.5rem;height:4.5rem;margin:0 auto .875rem">
+        <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(120,242,117,.18);animation:pingA 2.8s ease-out infinite"></div>
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,rgba(120,242,117,.12),rgba(82,204,79,.06));border-radius:50%;border:1px solid rgba(120,242,117,.28);display:flex;align-items:center;justify-content:center">
+          <span style="font-size:1.85rem;line-height:1">₹</span>
+        </div>
+      </div>
+      <p style="font-size:.6rem;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.2rem">Total Balance</p>
+      <p style="font-size:2.4rem;font-weight:800;letter-spacing:-.05em;line-height:1;margin-bottom:.4rem" id="walletBal">₹3,482.50</p>
+      <div style="display:flex;justify-content:center;gap:.5rem;margin-bottom:.875rem">
+        <span style="font-size:.72rem;color:var(--t2)"><span style="color:var(--g4);font-weight:700">₹2,156</span> purchase</span>
+        <span style="color:var(--t3)">·</span>
+        <span style="font-size:.72rem;color:var(--t2)"><span style="color:var(--o4);font-weight:700">₹1,326</span> sales</span>
+      </div>
+      <!-- Action buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem">
+        <button onclick="toggleSheet('addMoneySheet')" class="btn btn-primary" style="border-radius:var(--r8);padding:.7rem">
+          <span class="material-symbols-outlined fi" style="font-size:.95rem">add_card</span> Add Money
+        </button>
+        <button onclick="toggleSheet('withdrawSheet')" class="btn btn-gold" style="border-radius:var(--r8);padding:.7rem">
+          <span class="material-symbols-outlined fi" style="font-size:.95rem">send_money</span> Withdraw
+        </button>
+      </div>
+    </div>
+
+    <!-- Add Money Panel -->
+    <div id="addMoneySheet" style="display:none;background:var(--bg2);border:1.5px solid rgba(120,242,117,.22);border-radius:var(--r12);padding:1rem;flex-direction:column;gap:.75rem;animation:fadeUp .3s both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem">
+        <p style="font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:.4rem"><span style="font-size:1.1rem">💳</span> Add Money</p>
+        <button onclick="toggleSheet('addMoneySheet')" style="background:none;border:none;color:var(--t3);cursor:pointer"><span class="material-symbols-outlined" style="font-size:1rem">close</span></button>
+      </div>
+      <!-- Amount pills -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem">
+        <button onclick="setAddAmt(this,500)"  class="amt-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">₹500</button>
+        <button onclick="setAddAmt(this,1000)" class="amt-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">₹1,000</button>
+        <button onclick="setAddAmt(this,2000)" class="amt-p sel-amt" style="padding:.6rem .3rem;background:rgba(120,242,117,.1);border:1px solid rgba(120,242,117,.3);border-radius:var(--r8);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--g4);transition:all .15s">₹2,000</button>
+        <button onclick="setAddAmt(this,5000)" class="amt-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">₹5,000</button>
+        <button onclick="setAddAmt(this,10000)" class="amt-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">₹10K</button>
+        <div style="padding:.5rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);display:flex;align-items:center;gap:.2rem">
+          <span style="font-size:.8rem;color:var(--t3)">₹</span>
+          <input type="number" placeholder="Custom" id="addCustom" style="background:none;border:none;outline:none;font-size:.78rem;font-weight:700;color:var(--t1);width:100%;font-family:var(--fd)" oninput="document.querySelectorAll('.amt-p').forEach(b=>b.classList.remove('sel-amt'));this.style.color='var(--g4)'"/>
+        </div>
+      </div>
+      <!-- Pay via -->
+      <div>
+        <label class="ilabel">Pay via</label>
+        <div style="padding:.75rem .875rem;background:rgba(120,242,117,.05);border:1.5px solid rgba(120,242,117,.25);border-radius:var(--r8);font-size:.82rem;font-weight:700;color:var(--g4);display:flex;align-items:center;gap:.5rem;cursor:pointer">
+          <span style="font-size:1rem">📱</span> ramesh@okicici
+          <div class="chip chip-g" style="margin-left:auto;font-size:.55rem">Primary</div>
+        </div>
+      </div>
+      <button onclick="processAddMoney()" class="btn btn-primary" style="border-radius:var(--r8)">
+        <span class="material-symbols-outlined fi">add</span> Add ₹<span id="addAmtDisplay">2,000</span> to Wallet
+      </button>
+    </div>
+
+    <!-- Withdraw Panel -->
+    <div id="withdrawSheet" style="display:none;background:var(--bg2);border:1.5px solid rgba(255,208,96,.22);border-radius:var(--r12);padding:1rem;flex-direction:column;gap:.75rem;animation:fadeUp .3s both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem">
+        <p style="font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:.4rem"><span style="font-size:1.1rem">🏦</span> Withdraw</p>
+        <button onclick="toggleSheet('withdrawSheet')" style="background:none;border:none;color:var(--t3);cursor:pointer"><span class="material-symbols-outlined" style="font-size:1rem">close</span></button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem">
+        <button onclick="setWdAmt(this,1000)" class="wd-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">₹1,000</button>
+        <button onclick="setWdAmt(this,2000)" class="wd-p sel-wd" style="padding:.6rem .3rem;background:rgba(255,208,96,.1);border:1px solid rgba(255,208,96,.3);border-radius:var(--r8);font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--o4);transition:all .15s">₹2,000</button>
+        <button onclick="setWdAmt(this,3482)" class="wd-p" style="padding:.6rem .3rem;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--fd);color:var(--t1);transition:all .15s">All</button>
+      </div>
+      <div style="padding:.75rem .875rem;background:var(--inp);border:1px solid var(--bdr2);border-radius:var(--r8);font-size:.82rem;font-weight:600;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:.5rem"><span>📱</span><span>ramesh@okicici</span></div>
+        <div class="chip chip-g" style="font-size:.55rem">Primary</div>
+      </div>
+      <button onclick="processWithdraw()" class="btn btn-gold" style="border-radius:var(--r8)">
+        <span class="material-symbols-outlined fi">send_money</span> Withdraw ₹<span id="wdAmtDisplay">2,000</span>
+      </button>
+    </div>
+
+    <!-- Transaction history -->
+    <div>
+      <p style="font-size:.6rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Recent Transactions</p>
+      <div id="walletTxList" style="display:flex;flex-direction:column;gap:.42rem"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: CART — Full Editable Cart Page
+══════════════════════════════════════════ -->
+<div class="screen" id="s-cart">
+  <div class="ghead" style="flex-shrink:0;padding:.875rem 1.1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <button class="btn-back" onclick="goBack()"><span class="material-symbols-outlined" style="font-size:1.05rem">arrow_back</span></button>
+        <div>
+          <h2 style="font-size:1.05rem;font-weight:800">Cart</h2>
+          <p style="font-size:.65rem;color:var(--t2)" id="cartSubtitle">0 items</p>
+        </div>
+      </div>
+      <button onclick="clearCart()" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;font-size:.7rem;font-weight:700;padding:.32rem .7rem;border-radius:var(--r6);cursor:pointer;font-family:var(--fd);transition:all .15s">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Cart items -->
+  <div class="scroller" style="padding:1rem 1.1rem;padding-bottom:10rem" id="cartPageBody">
+    <!-- rendered by renderCartPage() -->
+  </div>
+
+  <!-- Sticky checkout panel -->
+  <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(5,9,5,.97);backdrop-filter:blur(24px);border-top:1px solid var(--bdr2);padding:.875rem 1.1rem 1.25rem;flex-shrink:0;z-index:20">
+    <!-- Customer -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.625rem">
+      <input class="ifield ifield-sm" type="text" placeholder="Customer name *" id="cartCustName"/>
+      <div style="display:flex;gap:.3rem">
+        <div style="padding:.55rem .55rem;background:var(--inp);border:1.5px solid var(--bdr2);border-radius:var(--r6);font-weight:700;font-size:.72rem;color:var(--t2);flex-shrink:0;display:flex;align-items:center">+91</div>
+        <input class="ifield ifield-sm" type="tel" placeholder="WhatsApp *" id="cartCustPhone" style="flex:1;min-width:0"/>
+      </div>
+    </div>
+    <!-- Summary row -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem .8rem;background:rgba(120,242,117,.05);border:1px solid rgba(120,242,117,.14);border-radius:var(--r8);margin-bottom:.625rem">
+      <div><p style="font-size:.58rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em">Sale Total</p><p style="font-size:1.1rem;font-weight:800" id="cartTotalDisplay">₹0</p></div>
+      <div style="width:1px;height:2rem;background:var(--bdr)"></div>
+      <div style="text-align:right"><p style="font-size:.58rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em">You Earn</p><p style="font-size:1.1rem;font-weight:800;color:var(--g4)" id="cartEarnDisplay">₹0</p></div>
+      <div style="width:1px;height:2rem;background:var(--bdr)"></div>
+      <div style="text-align:right"><p style="font-size:.58rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em">+OTP Bonus</p><p style="font-size:1.1rem;font-weight:800;color:var(--o4)">₹5</p></div>
+    </div>
+    <button onclick="finalProcessSale()" class="btn btn-primary" style="border-radius:var(--r12)">
+      <span class="material-symbols-outlined fi">send</span> Confirm Sale & Send OTP
+    </button>
+  </div>
+</div>
+
 </div><!-- end .shell -->
 
 <!-- ══════════════════════════════════════════
@@ -1178,6 +1364,56 @@ select.ifield{appearance:none;cursor:pointer}
 <script>
 const API_KEY = "AIzaSyCP_0VbUN5msITQm3z7erOZAvqygdbFMZw";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+// Wallet toggle — fixes "toggleSheet is not defined"
+function toggleSheet(id){
+  const el=document.getElementById(id);
+  if(!el){console.error('Sheet not found:',id);return;}
+  const other=id==='addMoneySheet'?'withdrawSheet':'addMoneySheet';
+  const otherEl=document.getElementById(other);
+  if(otherEl)otherEl.style.display='none';
+  const wasOpen=el.style.display==='flex';
+  el.style.display=wasOpen?'none':'flex';
+  if(!wasOpen)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+}
+function setAddAmt(btn,amt){
+  window._addAmt=amt;
+  document.querySelectorAll('.amt-p').forEach(b=>{b.style.background='var(--bg3)';b.style.borderColor='var(--bdr2)';b.style.color='var(--t1)';});
+  btn.style.background='rgba(120,242,117,.1)';btn.style.borderColor='rgba(120,242,117,.3)';btn.style.color='var(--g4)';
+  const d=document.getElementById('addAmtDisplay');if(d)d.textContent=amt.toLocaleString('en-IN');
+  const c=document.getElementById('addCustom');if(c)c.value='';
+}
+function setWdAmt(btn,amt){
+  window._wdAmt=amt;
+  document.querySelectorAll('.wd-p').forEach(b=>{b.style.background='var(--bg3)';b.style.borderColor='var(--bdr2)';b.style.color='var(--t1)';});
+  btn.style.background='rgba(255,208,96,.1)';btn.style.borderColor='rgba(255,208,96,.3)';btn.style.color='var(--o4)';
+  const d=document.getElementById('wdAmtDisplay');if(d)d.textContent=amt.toLocaleString('en-IN');
+}
+function processAddMoney(){
+  const customEl=document.getElementById('addCustom');
+  const custom=customEl?parseInt(customEl.value)||0:0;
+  const finalAmt=custom>0?custom:(window._addAmt||2000);
+  if(!finalAmt||finalAmt<1){showToast('⚠️ Enter valid amount');return;}
+  ['walletBal','homeBalance'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const cur=parseFloat(el.textContent.replace(/[₹,]/g,'')||'3482.50');
+    el.textContent='₹'+(cur+finalAmt).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  });
+  TXNS.unshift({type:'add',label:'Money Added to Wallet',sub:'Via UPI · ramesh@okicici',date:'Just now',amt:'+₹'+finalAmt.toLocaleString('en-IN'),clr:'#78f275',icon:'add_card'});
+  document.getElementById('addMoneySheet').style.display='none';
+  if(typeof renderWalletTx==='function')renderWalletTx();
+  showToast('✅ ₹'+finalAmt.toLocaleString('en-IN')+' added!');
+  startConfetti();
+}
+function processWithdraw(){
+  const amt=window._wdAmt||2000;
+  TXNS.unshift({type:'withdraw',label:'Withdrawal',sub:'To ramesh@okicici',date:'Just now',amt:'-₹'+amt.toLocaleString('en-IN'),clr:'#ef4444',icon:'send_money'});
+  document.getElementById('withdrawSheet').style.display='none';
+  if(typeof renderWalletTx==='function')renderWalletTx();
+  showToast('✅ ₹'+amt.toLocaleString('en-IN')+' transfer initiated!');
+}
+window._addAmt=2000; window._wdAmt=2000;
 
 const Intelligence = {
   async ask(prompt, sys='') {
@@ -1278,8 +1514,8 @@ function onEnter(id) {
   if (id==='s-distributor'){ initDistributorScreen(); }
   if (id==='s-ready')     { initReady(); }
   if (id==='s-settings')  { updateSettings(); }
-  if (id==='s-wallet')    { renderWalletTx(); }
-  if (id==='s-cart')      { renderCartPage(); }
+  if (id==='s-wallet')    { renderWalletTx(); document.getElementById('addMoneySheet').style.display='none';document.getElementById('withdrawSheet').style.display='none'; }
+  if (id==='s-cart')      { renderCartPage(); document.getElementById('cartCustName').value='';document.getElementById('cartCustPhone').value=''; }
 }
 
 function setNav(id) {
@@ -1373,14 +1609,60 @@ function loginBack(){
 ══════════════════════════════════════════ -->
 <script>
 let selCatV='agri';
+const CAT_CONFIG = {
+  agri:        {label:'Agri Retailer',      emoji:'🌱', dist_kw:'agri fertilizer pesticide seed dealer',
+                prods:[{name:'IFFCO DAP 18:46:0',cat:'Fertilizer',unit:'50kg bag',qty:20,buy:1200,sell:1350,icon:'grass',clr:'#78f275',earn:13.50},
+                       {name:'Urea 46% N',cat:'Fertilizer',unit:'50kg',qty:35,buy:240,sell:267,icon:'eco',clr:'#a8f7a6',earn:2.67},
+                       {name:'Corteva Delegate 11.7%',cat:'Pesticide',unit:'250ml',qty:5,buy:720,sell:845,icon:'science',clr:'#a0d2ff',earn:8.45},
+                       {name:'PM Kisan Hybrid Seeds',cat:'Seed',unit:'1kg pack',qty:50,buy:150,sell:180,icon:'spa',clr:'#86efac',earn:1.80}]},
+  food:        {label:'Food & Grocery',     emoji:'🍱', dist_kw:'FMCG food grocery wholesale distributor',
+                prods:[{name:'Amul Full Cream Milk 1L',cat:'Dairy',unit:'pack',qty:100,buy:58,sell:65,icon:'water_drop',clr:'#fde68a',earn:0.65},
+                       {name:'Fortune Sunflower Oil 5L',cat:'Edible Oil',unit:'can',qty:30,buy:680,sell:750,icon:'local_dining',clr:'#fcd34d',earn:7.50},
+                       {name:'Aashirvaad Atta 10kg',cat:'Flour',unit:'bag',qty:40,buy:380,sell:420,icon:'grain',clr:'#d4a574',earn:4.20},
+                       {name:'Nestle Maggi 12pk',cat:'Noodles',unit:'box',qty:25,buy:145,sell:162,icon:'ramen_dining',clr:'#f97316',earn:1.62}]},
+  pharma:      {label:'Pharmacy',           emoji:'💊', dist_kw:'pharmaceutical medicine health distributor',
+                prods:[{name:'Dolo 650 Strip 10',cat:'Analgesic',unit:'strip',qty:200,buy:22,sell:28,icon:'medication',clr:'#c084fc',earn:0.28},
+                       {name:'Benadryl Cough Syrup',cat:'Cough',unit:'100ml',qty:50,buy:65,sell:78,icon:'vaccines',clr:'#818cf8',earn:0.78},
+                       {name:'Combiflam Tablet 20',cat:'Pain Relief',unit:'strip',qty:150,buy:38,sell:45,icon:'health_and_safety',clr:'#34d399',earn:0.45},
+                       {name:'Volini Spray 60g',cat:'Topical',unit:'can',qty:30,buy:195,sell:230,icon:'healing',clr:'#60a5fa',earn:2.30}]},
+  hardware:    {label:'Hardware & Tools',   emoji:'🔧', dist_kw:'hardware tools electrical building distributor',
+                prods:[{name:'Havells 1.5mm Wire 90m',cat:'Electrical',unit:'roll',qty:15,buy:1800,sell:2100,icon:'cable',clr:'#fbbf24',earn:21.00},
+                       {name:'Anchor Roma Switch',cat:'Switch',unit:'piece',qty:80,buy:45,sell:55,icon:'toggle_on',clr:'#f87171',earn:0.55},
+                       {name:'Pidilite Fevicol 1kg',cat:'Adhesive',unit:'can',qty:40,buy:195,sell:230,icon:'construction',clr:'#fb923c',earn:2.30},
+                       {name:'Stanley Screwdriver Set',cat:'Tools',unit:'set',qty:20,buy:380,sell:450,icon:'handyman',clr:'#a3e635',earn:4.50}]},
+  textile:     {label:'Textile & Fashion',  emoji:'👗', dist_kw:'textile fabric cloth wholesale distributor',
+                prods:[{name:'Cotton Fabric 1m',cat:'Fabric',unit:'metre',qty:200,buy:85,sell:110,icon:'checkroom',clr:'#f9a8d4',earn:1.10},
+                       {name:'Polyester Saree',cat:'Saree',unit:'piece',qty:50,buy:350,sell:450,icon:'dry_cleaning',clr:'#c4b5fd',earn:4.50},
+                       {name:'Denim Jeans M',cat:'Readymade',unit:'piece',qty:30,buy:450,sell:580,icon:'accessibility_new',clr:'#93c5fd',earn:5.80},
+                       {name:'Zari Border 1m',cat:'Accessories',unit:'metre',qty:100,buy:40,sell:55,icon:'style',clr:'#fcd34d',earn:0.55}]},
+  electronics: {label:'Electronics',        emoji:'📱', dist_kw:'electronics mobile gadgets appliance distributor',
+                prods:[{name:'USB-C Cable 1m',cat:'Accessories',unit:'piece',qty:100,buy:85,sell:120,icon:'usb',clr:'#60a5fa',earn:1.20},
+                       {name:'Screen Guard 6.5"',cat:'Mobile Acc.',unit:'piece',qty:80,buy:28,sell:45,icon:'smartphone',clr:'#a78bfa',earn:0.45},
+                       {name:'Philips LED 9W',cat:'Lighting',unit:'piece',qty:60,buy:88,sell:110,icon:'light_mode',clr:'#fde68a',earn:1.10},
+                       {name:'TP-Link Router',cat:'Networking',unit:'piece',qty:10,buy:1200,sell:1500,icon:'router',clr:'#34d399',earn:15.00}]},
+};
+
 function selCat(c){
   selCatV=c;
-  ['agri','kirana','chem'].forEach(x=>{
-    document.getElementById('cat-'+x).classList.toggle('sel',x===c);
+  Object.keys(CAT_CONFIG).forEach(x=>{
+    const card=document.getElementById('cat-'+x);
     const ck=document.getElementById('ck-'+x);
-    if(x===c){ck.textContent='check_circle';ck.classList.add('fi');ck.style.color='var(--g4)';}
-    else{ck.textContent='radio_button_unchecked';ck.classList.remove('fi');ck.style.color='var(--t3)';}
+    if(!card)return;
+    card.classList.toggle('sel',x===c);
+    if(ck){
+      if(x===c){ck.textContent='check_circle';ck.classList.add('fi');ck.style.color='var(--g4)';}
+      else{ck.textContent='radio_button_unchecked';ck.classList.remove('fi');ck.style.color='var(--t3)';}
+    }
   });
+}
+
+function applyCategory(cat){
+  const cfg=CAT_CONFIG[cat||'agri'];
+  if(!cfg)return;
+  // Swap inventory products
+  INV.list=cfg.prods.map((p,i)=>({...p,id:i+1}));
+  INV.nid=INV.list.length+1;
+  renderAll();
 }
 const LOCS=[
   {n:'Khetgaon, Madhya Pradesh',c:'23.4587° N, 76.9318° E'},
@@ -1433,6 +1715,7 @@ function handleShopSetup(){
   if(!n){showToast('⚠️ Enter shop name');return;}
   if(!o){showToast('⚠️ Enter owner name');return;}
   S.user.shop=n;S.user.name=o;S.user.cat=selCatV;S.user.loc=l||'India';
+  applyCategory(selCatV);
   navigate('s-distributor');
 }
 let selPayV='upi';
@@ -1468,7 +1751,7 @@ async function initDistributorScreen(){
   document.getElementById('distResults').innerHTML='';
   document.getElementById('distAiTxt').textContent='Finding nearby distributors...';
   renderDistSkels();
-  const prompt=`Generate 4 realistic Indian agricultural distributor companies for a ${S.user.cat} dealer in ${S.user.loc||'Madhya Pradesh'}. Return JSON array:\n[{"name":"","city":"","products":["",""],"rating":4.5,"distance":15,"emoji":"🌾"}]`;
+  const catCfg=CAT_CONFIG[S.user.cat]||CAT_CONFIG['agri'];const distKw=catCfg.dist_kw||'agri distributor';const prompt=`Generate 4 realistic Indian ${distKw} companies in ${S.user.loc||'India'}. Return JSON array:\n[{"name":"","city":"","products":["",""],"rating":4.5,"distance":15,"emoji":"🌾"}]`;
   const result=await Intelligence.askJSON(prompt);
   document.getElementById('distAiBar').style.display='none';
   allDists=result&&Array.isArray(result)?result:FALLBACK_DISTS;
@@ -1953,21 +2236,43 @@ function addTyping(){
 
 async function sendChat(){
   const inp=document.getElementById('chatInput');
-  const msg=inp.value.trim(); if(!msg)return;
+  const msg=inp.value.trim();if(!msg)return;
   inp.value='';
   document.getElementById('quickPs').style.display='none';
   addBubble('user',msg);
   chatHist.push({role:'user',parts:[{text:msg}]});
   addTyping();
-  const body={system_instruction:{parts:[{text:CHAT_SYS}]},contents:chatHist,generationConfig:{temperature:.7,maxOutputTokens:250}};
+  // Build full system context inline in first user message if history is short
+  const allMsgs=[...chatHist];
+  if(allMsgs.length===1){
+    allMsgs[0]={role:'user',parts:[{text:CHAT_SYS+'
+
+User question: '+msg}]};
+  }
+  const body={contents:allMsgs,generationConfig:{temperature:.8,maxOutputTokens:300}};
   try{
     const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){throw new Error('HTTP '+r.status);}
     const d=await r.json();
-    const reply=d.candidates?.[0]?.content?.parts?.[0]?.text||"I'm having trouble connecting. Please try again.";
+    if(d.error){throw new Error(d.error.message);}
+    const reply=d.candidates?.[0]?.content?.parts?.[0]?.text;
+    if(!reply){throw new Error('No reply');}
     chatHist.push({role:'model',parts:[{text:reply}]});
     document.getElementById('typing')?.remove();
     addBubble('ai',reply);
-  }catch{document.getElementById('typing')?.remove();addBubble('ai',"Connection issue. Please check your internet.");}
+  }catch(e){
+    console.error('Chat error:',e);
+    document.getElementById('typing')?.remove();
+    // Smart fallback responses
+    const fallbacks={
+      'top products':'Your top earner is IFFCO DAP (₹13.50/bag). Urea 46% has highest volume at 35 units. Corteva Delegate gives best margin at 17.4% — but only 5 left, reorder now.',
+      'diamond':'You need ₹26,550 more in purchases this month. One big invoice from Sharma Agri Distributors would do it. Diamond unlocks 2.5% cashback vs your current 1.75%.',
+      'reorder':'Priority reorder: Corteva Delegate (5 units left, high margin), Gromor Amino Acid (8 units). Both are fast movers. Contact Jain Agro Chemicals.',
+      'month':'This month: ₹2,156 purchase rewards + ₹1,326 from 73 sales = ₹3,482 total. You're on track for a strong month.',
+    };
+    const key=Object.keys(fallbacks).find(k=>msg.toLowerCase().includes(k));
+    addBubble('ai',key?fallbacks[key]:'Based on your data: Gold tier (1.75%), ₹73,450 purchased, ₹3,482 earned this month. Need ₹26,550 more for Diamond tier at 2.5%.');
+  }
 }
 
 function sendQP(t){ document.getElementById('chatInput').value=t; sendChat(); }
@@ -2029,77 +2334,20 @@ document.addEventListener('DOMContentLoaded',()=>{
      JS: WALLET SCREEN
 ══════════════════════════════════════════ -->
 <script>
-let addSelectedAmt=2000, wdSelectedAmt=2000;
-
-function showAddMoneySheet(){
-  const s=document.getElementById('addMoneySheet');
-  s.style.display=s.style.display==='flex'?'none':'flex';
-  document.getElementById('withdrawSheet').style.display='none';
-}
-function showWithdrawSheet(){
-  const s=document.getElementById('withdrawSheet');
-  s.style.display=s.style.display==='flex'?'none':'flex';
-  document.getElementById('addMoneySheet').style.display='none';
-}
-function setAddAmt(btn,amt){
-  addSelectedAmt=amt;
-  document.querySelectorAll('.amt-pill').forEach(b=>{
-    b.style.background='var(--bg3)';b.style.borderColor='var(--bdr2)';b.style.color='var(--t1)';
-  });
-  btn.style.background='rgba(120,242,117,.1)';btn.style.borderColor='rgba(120,242,117,.3)';btn.style.color='var(--g4)';
-  const el=document.getElementById('addAmtDisplay');
-  if(el)el.textContent=amt.toLocaleString('en-IN');
-}
-function setWdAmt(btn,amt){
-  wdSelectedAmt=amt;
-  document.querySelectorAll('.wd-pill').forEach(b=>{
-    b.style.background='var(--bg3)';b.style.borderColor='var(--bdr2)';b.style.color='var(--t1)';
-  });
-  btn.style.background='rgba(255,208,96,.1)';btn.style.borderColor='rgba(255,208,96,.3)';btn.style.color='var(--o4)';
-  const el=document.getElementById('wdAmtDisplay');
-  if(el)el.textContent=amt.toLocaleString('en-IN');
-}
-function processAddMoney(){
-  const custom=document.getElementById('customAddAmt')?.value;
-  const amt=custom?parseInt(custom):addSelectedAmt;
-  if(!amt||amt<1){showToast('⚠️ Enter a valid amount');return;}
-  // Update balance display
-  const balEl=document.getElementById('walletBal');
-  const homeEl=document.getElementById('homeBalance');
-  const currentBal=parseFloat((balEl?.textContent||'3482.50').replace(/[₹,]/g,''));
-  const newBal=(currentBal+amt).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(balEl)balEl.textContent='₹'+newBal;
-  if(homeEl)homeEl.textContent='₹'+newBal;
-  TXNS.unshift({type:'add',label:'Money Added',sub:`Via UPI · ramesh@okicici`,date:'Just now',amt:'+₹'+amt.toLocaleString('en-IN'),clr:'#78f275',icon:'add_card'});
-  document.getElementById('addMoneySheet').style.display='none';
-  renderWalletTx();
-  showToast('✅ ₹'+amt.toLocaleString('en-IN')+' added to wallet!');
-  startConfetti();
-}
-function processWithdraw(){
-  const amt=wdSelectedAmt;
-  TXNS.unshift({type:'withdraw',label:'Withdrawal',sub:`To ramesh@okicici`,date:'Just now',amt:'-₹'+amt.toLocaleString('en-IN'),clr:'#ef4444',icon:'send_money'});
-  document.getElementById('withdrawSheet').style.display='none';
-  renderWalletTx();
-  showToast('✅ ₹'+amt.toLocaleString('en-IN')+' transfer initiated!');
-}
+/* renderWalletTx — transaction list in wallet screen */
 function renderWalletTx(){
-  const el=document.getElementById('walletTxList'); if(!el)return;
+  const el=document.getElementById('walletTxList');if(!el)return;
   el.innerHTML=TXNS.slice(0,8).map(t=>`
-    <div style="display:flex;align-items:center;gap:.7rem;padding:.7rem .875rem;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r8)">
-      <div style="width:2.1rem;height:2.1rem;background:rgba(255,255,255,.04);border-radius:.55rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:.65rem;padding:.65rem .875rem;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r8)">
+      <div style="width:2rem;height:2rem;background:var(--bg3);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <span class="material-symbols-outlined fi" style="font-size:.85rem;color:${t.clr}">${t.icon}</span>
       </div>
       <div style="flex:1;min-width:0">
-        <p style="font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.label}</p>
-        <p style="font-size:.65rem;color:var(--t3)">${t.sub} · ${t.date}</p>
+        <p style="font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.label}</p>
+        <p style="font-size:.62rem;color:var(--t3)">${t.sub} · ${t.date}</p>
       </div>
-      <span style="font-weight:700;font-size:.875rem;color:${t.clr};flex-shrink:0">${t.amt}</span>
+      <span style="font-weight:700;font-size:.82rem;color:${t.clr};flex-shrink:0">${t.amt}</span>
     </div>`).join('');
-}
-function selectUPIApp(el,name){
-  document.querySelectorAll('.upi-app-btn').forEach(b=>{b.style.background='var(--bg3)';b.style.borderColor='var(--bdr)';b.style.color='var(--t2)';});
-  el.style.background='rgba(120,242,117,.1)';el.style.borderColor='rgba(120,242,117,.3)';el.style.color='var(--g4)';
 }
 </script>
 
@@ -2107,111 +2355,157 @@ function selectUPIApp(el,name){
      JS: CART PAGE
 ══════════════════════════════════════════ -->
 <script>
-function openCart(){
-  renderCartPage();
-  navigate('s-cart');
-}
+function openCart(){ navigate('s-cart'); }
 
 function renderCartPage(){
-  const el=document.getElementById('cartPageItems'); if(!el)return;
-  const subEl=document.getElementById('cartHeaderSub');
-  const totalEl=document.getElementById('cartTotalDisplay');
+  const el=document.getElementById('cartPageBody')||document.getElementById('cartPageItems');
+  const sub=document.getElementById('cartSubtitle')||document.getElementById('cartHeaderSub');
+  const totEl=document.getElementById('cartTotalDisplay');
   const earnEl=document.getElementById('cartEarnDisplay');
+  if(!el)return;
+  const total=cart.reduce((s,c)=>s+c.sell*c.qty,0);
+  const earned=+(cart.reduce((s,c)=>s+c.earn*c.qty,0)).toFixed(2);
+  const ct=cart.reduce((s,c)=>s+c.qty,0);
+  if(sub)sub.textContent=ct+' item'+(ct!==1?'s':'')+' · ₹'+total.toLocaleString('en-IN');
+  if(totEl)totEl.textContent='₹'+total.toLocaleString('en-IN');
+  if(earnEl)earnEl.textContent='₹'+earned.toLocaleString('en-IN');
   if(!cart.length){
     el.innerHTML=`<div style="text-align:center;padding:3rem 1rem">
-      <div style="font-size:3rem;margin-bottom:.75rem">🛒</div>
+      <div style="font-size:3.5rem;margin-bottom:.75rem">🛒</div>
       <p style="font-size:.95rem;font-weight:700;margin-bottom:.35rem">Cart is empty</p>
       <p style="font-size:.82rem;color:var(--t2);margin-bottom:1.25rem">Add products from the sell screen</p>
       <button onclick="goBack()" class="btn btn-primary" style="width:auto;padding:.7rem 1.5rem;border-radius:var(--r12)">Browse Products</button>
     </div>`;
-    if(subEl) subEl.textContent='0 items';
-    if(totalEl) totalEl.textContent='₹0';
-    if(earnEl) earnEl.textContent='₹0';
     return;
   }
-  const total=cart.reduce((s,c)=>s+c.sell*c.qty,0);
-  const earned=cart.reduce((s,c)=>s+c.earn*c.qty,0);
-  if(subEl) subEl.textContent=cart.reduce((s,c)=>s+c.qty,0)+' items · ₹'+total.toLocaleString('en-IN');
-  if(totalEl) totalEl.textContent='₹'+total.toLocaleString('en-IN');
-  if(earnEl) earnEl.textContent='₹'+(+earned.toFixed(2)).toLocaleString('en-IN');
   el.innerHTML=cart.map((c,i)=>`
-    <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:.875rem;display:flex;gap:.875rem;animation:fadeUp .3s ${i*.06}s both">
+    <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:.875rem;display:flex;gap:.75rem;margin-bottom:.55rem;animation:fadeUp .3s ${i*.06}s both">
       <div style="width:3rem;height:3rem;background:var(--bg3);border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <span class="material-symbols-outlined fi" style="font-size:1.35rem;color:${c.clr}">${c.icon}</span>
+        <span class="material-symbols-outlined fi" style="font-size:1.3rem;color:${c.clr}">${c.icon}</span>
       </div>
       <div style="flex:1;min-width:0">
-        <p style="font-weight:700;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.2rem">${c.name}</p>
-        <p style="font-size:.68rem;color:var(--t3);margin-bottom:.5rem">${c.unit} · earn ₹${c.earn}/unit</p>
-        <!-- Qty + price row -->
+        <p style="font-weight:700;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.18rem">${c.name}</p>
+        <p style="font-size:.65rem;color:var(--t3);margin-bottom:.45rem">${c.unit} · earn ₹${c.earn}/unit</p>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="display:flex;align-items:center;gap:.5rem">
-            <button onclick="cartPageQty(${c.id},-1)" style="width:2rem;height:2rem;border-radius:var(--r6);background:var(--bg3);border:1px solid var(--bdr2);color:var(--g4);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;transition:all .12s">−</button>
-            <span style="font-size:.95rem;font-weight:800;min-width:1.8rem;text-align:center">${c.qty}</span>
-            <button onclick="cartPageQty(${c.id},1)" style="width:2rem;height:2rem;border-radius:var(--r6);background:var(--bg3);border:1px solid var(--bdr2);color:var(--g4);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;transition:all .12s">+</button>
+          <div style="display:flex;align-items:center;gap:.4rem;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r8);padding:.2rem .35rem">
+            <button onclick="cpQty(${c.id},-1)" style="width:1.75rem;height:1.75rem;border-radius:var(--r4);background:var(--bg4);border:none;color:var(--g4);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--fd)">−</button>
+            <span style="font-size:.95rem;font-weight:800;min-width:1.5rem;text-align:center">${c.qty}</span>
+            <button onclick="cpQty(${c.id},1)" style="width:1.75rem;height:1.75rem;border-radius:var(--r4);background:var(--bg4);border:none;color:var(--g4);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--fd)">+</button>
           </div>
           <div style="text-align:right">
-            <p style="font-weight:800;font-size:1rem">₹${(c.sell*c.qty).toLocaleString('en-IN')}</p>
-            <p style="font-size:.65rem;color:var(--g4)">earn ₹${+(c.earn*c.qty).toFixed(2)}</p>
+            <p style="font-weight:800;font-size:.95rem">₹${(c.sell*c.qty).toLocaleString('en-IN')}</p>
+            <p style="font-size:.62rem;color:var(--g4)">earn ₹${+(c.earn*c.qty).toFixed(2)}</p>
           </div>
         </div>
       </div>
-      <button onclick="removeCartItem(${c.id})" style="align-self:flex-start;background:none;border:none;color:var(--t3);cursor:pointer;padding:.2rem;flex-shrink:0">
-        <span class="material-symbols-outlined" style="font-size:.95rem">close</span>
+      <button onclick="cpRemove(${c.id})" style="align-self:flex-start;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:var(--r4);color:#ef4444;cursor:pointer;padding:.25rem;flex-shrink:0;width:1.75rem;height:1.75rem;display:flex;align-items:center;justify-content:center">
+        <span class="material-symbols-outlined" style="font-size:.85rem">close</span>
       </button>
     </div>`).join('');
 }
 
-function cartPageQty(id,delta){
-  const c=cart.find(x=>x.id===id); if(!c)return;
-  c.qty+=delta;
-  if(c.qty<=0){ cart=cart.filter(x=>x.id!==id); }
-  renderCartPage(); updateCart();
+function cpQty(id,d){
+  const c=cart.find(x=>x.id===id);if(!c)return;
+  c.qty+=d;
+  if(c.qty<=0)cart=cart.filter(x=>x.id!==id);
+  renderCartPage();updateCart();
 }
-
-function removeCartItem(id){
+function cpRemove(id){
   cart=cart.filter(x=>x.id!==id);
-  renderCartPage(); updateCart();
-}
-
-function finalProcessSale(){
-  const name=document.getElementById('cartCustName')?.value.trim();
-  const phone=document.getElementById('cartCustPhone')?.value.trim();
-  if(!cart.length){showToast('⚠️ Cart is empty');return;}
-  if(!name){showToast('⚠️ Enter customer name');return;}
-  if(!phone){showToast('⚠️ Enter WhatsApp number');return;}
-  const earned=+(cart.reduce((s,c)=>s+c.earn*c.qty,0)+5).toFixed(2);
-  const total=cart.reduce((s,c)=>s+c.sell*c.qty,0);
-  cart.forEach(c=>{const p=INV.list.find(x=>x.id===c.id);if(p)p.qty=Math.max(0,p.qty-c.qty);});
-  TXNS.unshift({type:'sale',label:'Sale to '+name,sub:cart[0].name.split(' ').slice(0,3).join(' ')+' & '+cart.reduce((s,c)=>s+c.qty,0)+' items',date:'Just now',amt:'+₹'+earned,clr:'#ffd060',icon:'storefront'});
-  document.getElementById('successEarned').textContent='+₹'+earned.toLocaleString('en-IN');
-  document.getElementById('successMsg').textContent='OTP sent to '+name+' — Reward credited!';
-  document.getElementById('successSummary').textContent='Sale: ₹'+total.toLocaleString('en-IN')+' · '+name;
-  cart=[];
-  updateCart(); renderCartPage(); renderAll();
-  startConfetti(); navigate('s-success');
+  renderCartPage();updateCart();
 }
 </script>
 
 <!-- ══════════════════════════════════════════
-     JS: PAYOUT EXTRA METHODS
+     JS: SALE OTP VERIFICATION
 ══════════════════════════════════════════ -->
 <script>
-function selPay(m){
-  selPayV=m;
-  ['upi','mobile','bank'].forEach(x=>{
-    const c=document.getElementById('pay-'+x);
-    const k=document.getElementById('pk-'+x);
-    if(c) c.classList.toggle('sel',x===m);
-    if(k){
-      if(x===m){k.textContent='check_circle';k.classList.add('fi');k.style.color='var(--g4)';}
-      else{k.textContent='radio_button_unchecked';k.classList.remove('fi');k.style.color='var(--t3)';}
-    }
-  });
-  document.getElementById('formUPI').style.display=m==='upi'?'flex':'none';
-  const fm=document.getElementById('formMobile');
-  if(fm)fm.style.display=m==='mobile'?'flex':'none';
-  const fb=document.getElementById('formBank');
-  if(fb){fb.style.display=m==='bank'?'flex':'none';if(m==='bank')fb.style.flexDirection='column';}
+let _pendingSaleName='', _pendingSalePhone='', _saleOTP='';
+
+function finalProcessSale(){
+  const name=(document.getElementById('cartCustName')?.value||'').trim();
+  const phone=(document.getElementById('cartCustPhone')?.value||'').trim();
+  if(!cart.length){showToast('⚠️ Cart is empty');return;}
+  if(!name){showToast('⚠️ Enter customer name');return;}
+  if(!phone||phone.length<10){showToast('⚠️ Enter 10-digit WhatsApp number');return;}
+  _pendingSaleName=name; _pendingSalePhone=phone;
+  _saleOTP=Math.floor(1000+Math.random()*9000).toString();
+  showSaleOTPModal(name,phone,_saleOTP);
+}
+
+function showSaleOTPModal(name,phone,otp){
+  document.getElementById('saleOTPModal')?.remove();
+  const modal=document.createElement('div');
+  modal.id='saleOTPModal';
+  modal.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);z-index:9998;display:flex;align-items:flex-end;animation:fadein .2s both';
+  modal.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--bdr2);border-radius:1.5rem 1.5rem 0 0;width:100%;padding:1.5rem 1.25rem 2rem;animation:slideUpIn .32s cubic-bezier(.25,1,.5,1) both">
+      <div style="width:36px;height:4px;background:var(--bg4);border-radius:9999px;margin:0 auto 1.25rem"></div>
+      <div style="text-align:center;margin-bottom:1.1rem">
+        <div style="width:3.8rem;height:3.8rem;background:rgba(120,242,117,.1);border:1px solid rgba(120,242,117,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;position:relative">
+          <span class="material-symbols-outlined fi" style="font-size:1.9rem;color:var(--g4)">sms</span>
+          <div style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(120,242,117,.2);animation:pingA 1.8s ease-out infinite"></div>
+        </div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:.28rem">Verify Sale with OTP</h3>
+        <p style="font-size:.78rem;color:var(--t2)">Sent to <strong style="color:var(--t1)">+91 ${phone}</strong> for ${name}</p>
+      </div>
+      <!-- Demo OTP display -->
+      <div style="background:rgba(120,242,117,.05);border:1.5px dashed rgba(120,242,117,.3);border-radius:var(--r8);padding:.7rem 1rem;margin-bottom:.875rem;text-align:center">
+        <p style="font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem">Demo OTP (for testing)</p>
+        <p style="font-size:2rem;font-weight:800;letter-spacing:.4em;color:var(--g4);font-family:var(--fm)">${otp}</p>
+      </div>
+      <!-- OTP input boxes -->
+      <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:.875rem">
+        <input id="so1" class="otp-box" type="text" maxlength="1" inputmode="numeric" oninput="sotpAdv(this,'so2')"/>
+        <input id="so2" class="otp-box" type="text" maxlength="1" inputmode="numeric" oninput="sotpAdv(this,'so3')"/>
+        <input id="so3" class="otp-box" type="text" maxlength="1" inputmode="numeric" oninput="sotpAdv(this,'so4')"/>
+        <input id="so4" class="otp-box" type="text" maxlength="1" inputmode="numeric" oninput="sotpAdv(this,null)"/>
+      </div>
+      <button onclick="verifySaleOTP()" class="btn btn-primary" style="border-radius:var(--r12);margin-bottom:.5rem">
+        <span class="material-symbols-outlined fi">verified</span> Verify & Complete Sale
+      </button>
+      <button onclick="document.getElementById('saleOTPModal').remove()" style="width:100%;background:none;border:none;color:var(--t3);font-size:.8rem;cursor:pointer;padding:.4rem;font-family:var(--fd)">Cancel</button>
+    </div>`;
+  document.getElementById('shell').appendChild(modal);
+  setTimeout(()=>document.getElementById('so1')?.focus(),250);
+}
+
+function sotpAdv(el,nid){
+  if(el.value){el.classList.add('filled');if(nid)document.getElementById(nid)?.focus();}
+  else el.classList.remove('filled');
+}
+
+function verifySaleOTP(){
+  const entered=['so1','so2','so3','so4'].map(id=>document.getElementById(id)?.value||'').join('');
+  if(entered===_saleOTP){
+    document.getElementById('saleOTPModal')?.remove();
+    completeSale(_pendingSaleName,_pendingSalePhone);
+  } else {
+    ['so1','so2','so3','so4'].forEach(id=>{
+      const e=document.getElementById(id);
+      if(e){e.value='';e.classList.remove('filled');e.style.borderColor='#ef4444';setTimeout(()=>e.style.borderColor='',1500);}
+    });
+    document.getElementById('so1')?.focus();
+    showToast('❌ Wrong OTP! Demo code: '+_saleOTP);
+  }
+}
+
+function completeSale(name,phone){
+  const earned=+(cart.reduce((s,c)=>s+c.earn*c.qty,0)+5).toFixed(2);
+  const total=cart.reduce((s,c)=>s+c.sell*c.qty,0);
+  const ct=cart.reduce((s,c)=>s+c.qty,0);
+  const firstItem=cart[0]?.name.split(' ').slice(0,3).join(' ')||'Products';
+  cart.forEach(c=>{const p=INV.list.find(x=>x.id===c.id);if(p)p.qty=Math.max(0,p.qty-c.qty);});
+  TXNS.unshift({type:'sale',label:'Sale to '+name,sub:firstItem+' · '+ct+' items',date:'Just now',amt:'+₹'+earned,clr:'#ffd060',icon:'storefront'});
+  const sEarned=document.getElementById('successEarned');
+  const sMsg=document.getElementById('successMsg');
+  const sSummary=document.getElementById('successSummary');
+  if(sEarned)sEarned.textContent='+₹'+earned.toLocaleString('en-IN');
+  if(sMsg)sMsg.textContent='OTP verified ✓ · Sale complete for '+name;
+  if(sSummary)sSummary.textContent='₹'+total.toLocaleString('en-IN')+' · '+ct+' items · Reward credited';
+  cart=[];
+  updateCart();renderCartPage();renderAll();
+  startConfetti();navigate('s-success');
 }
 </script>
 

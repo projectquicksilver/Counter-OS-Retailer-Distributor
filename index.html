@@ -35,23 +35,41 @@
   --td:#1a6aaa; --ts:#5a6a7a; --tb:#8a5020; --tg:#a06000;
   --card:rgba(215,235,215,.95); --inp:#dde8dd; --sh:0 4px 20px rgba(0,0,0,.1);
 }
-/* Light theme specific overrides for hardcoded colors */
-[data-theme="light"] .screen{background:var(--bg0)}
-[data-theme="light"] .ghead{background:rgba(240,247,240,.95);border-bottom-color:var(--bdr)}
-[data-theme="light"] .bnav{background:rgba(240,247,240,.95)}
-[data-theme="light"] .cbubble-ai{background:var(--bg3);border-color:var(--bdr2);color:var(--t1)}
-[data-theme="light"] .cbubble-user{background:var(--g6);color:#fff}
-[data-theme="light"] #toast{background:var(--bg4);color:var(--t1)}
-[data-theme="light"] .otp-box{background:var(--inp);border-color:var(--bdr2);color:var(--t1)}
-[data-theme="light"] .otp-box.filled{background:rgba(26,122,24,.06)}
-[data-theme="light"] input,
-[data-theme="light"] select{color:var(--t1)!important}
-[data-theme="light"] .btn-primary{color:#fff!important}
-[data-theme="light"] .btn-ghost{color:var(--t1)!important}
+/* Light theme — complete overrides */
+[data-theme="light"] .screen{background:var(--bg0);color:var(--t1)}
+[data-theme="light"] .ghead{background:rgba(235,248,235,.97)!important;border-bottom-color:var(--bdr)!important}
+[data-theme="light"] .bnav{background:rgba(235,248,235,.97)!important;border-top-color:var(--bdr)!important}
+[data-theme="light"] .card,.card-em{background:var(--card)!important;border-color:var(--bdr)!important}
+[data-theme="light"] .cbubble-ai{background:var(--bg3)!important;border-color:var(--bdr2)!important;color:var(--t1)!important}
+[data-theme="light"] .cbubble-user{background:var(--g5)!important;color:#fff!important}
+[data-theme="light"] #toast{background:var(--bg3)!important;color:var(--t1)!important;border-color:var(--bdr2)!important}
+[data-theme="light"] .otp-box{background:var(--inp)!important;border-color:var(--bdr2)!important;color:var(--t1)!important}
+[data-theme="light"] .otp-box.filled{background:rgba(26,122,24,.08)!important}
+[data-theme="light"] input{background:var(--inp)!important;color:var(--t1)!important;border-color:var(--bdr2)!important}
+[data-theme="light"] select{background:var(--inp)!important;color:var(--t1)!important;border-color:var(--bdr2)!important}
+[data-theme="light"] textarea{background:var(--inp)!important;color:var(--t1)!important}
+/* Force text visible on hardcoded dark card backgrounds */
+[data-theme="light"] [style*="background:linear-gradient(135deg,#0d1f0e"],[data-theme="light"] [style*="background:linear-gradient(135deg,#122416"],[data-theme="light"] [style*="background:linear-gradient(145deg,#0c1e0d"],[data-theme="light"] [style*="background:linear-gradient(135deg,#0c1e0d"]{background:var(--bg2)!important;border-color:var(--bdr2)!important}
+[data-theme="light"] [style*="background:#000"]{background:var(--bg1)!important}
+[data-theme="light"] [style*="color:#edf5ed"],[data-theme="light"] [style*="color:var(--t1)"]{color:var(--t1)!important}
+/* Home wallet card light override */
+[data-theme="light"] #homeBalance{color:var(--t1)!important}
+[data-theme="light"] .btn-primary{color:#fff!important;text-shadow:none}
+[data-theme="light"] .btn-ghost{background:var(--bg3)!important;color:var(--t1)!important;border-color:var(--bdr2)!important}
+[data-theme="light"] .btn-back{background:rgba(26,122,24,.1)!important;border-color:rgba(26,122,24,.25)!important;color:var(--g4)!important}
+[data-theme="light"] .btn-icon{background:var(--bg3)!important;border-color:var(--bdr)!important;color:var(--t2)!important}
+[data-theme="light"] .selopt{background:var(--bg2)!important;border-color:var(--bdr)!important;color:var(--t1)!important}
+[data-theme="light"] .selopt.sel{background:rgba(26,122,24,.08)!important;border-color:var(--g4)!important}
+[data-theme="light"] .ifield{background:var(--inp)!important;border-color:var(--bdr2)!important;color:var(--t1)!important}
+[data-theme="light"] .nb{color:var(--t3)!important}
+[data-theme="light"] .nb.active{color:var(--g4)!important}
+[data-theme="light"] p,[data-theme="light"] span,[data-theme="light"] h1,[data-theme="light"] h2,[data-theme="light"] h3{color:inherit}
+/* Hardcoded dark gradients on home screen override */
+[data-theme="light"] #s-home .scroller [style*="#0c1e0d"],[data-theme="light"] #s-home .scroller [style*="#0d1f0e"],[data-theme="light"] #s-home .scroller [style*="#122416"],[data-theme="light"] #s-home .scroller [style*="#081208"]{background:var(--bg2)!important}
 
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html{height:100%;background:#000;font-size:16px;overflow:hidden}
-body{height:100%;background:#000;display:flex;justify-content:center;align-items:stretch;font-family:var(--fd);color:var(--t1);overflow:hidden}
+html{height:100%;height:100dvh;background:#000;font-size:16px;overflow:hidden}
+body{height:100%;height:100dvh;background:#000;display:flex;justify-content:center;align-items:stretch;font-family:var(--fd);color:var(--t1);overflow:hidden;position:fixed;width:100%}
 
 /* Material icons */
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;line-height:1;vertical-align:middle;font-size:inherit;user-select:none}
@@ -60,9 +78,9 @@ body{height:100%;background:#000;display:flex;justify-content:center;align-items
 /* ══════════════════════════════════════════
    2. APP SHELL & SCREEN SYSTEM
 ══════════════════════════════════════════ */
-.shell{position:relative;width:100%;max-width:430px;height:100svh;min-height:100vh;overflow:hidden;background:var(--bg0);box-shadow:0 0 80px rgba(0,0,0,.8);flex-shrink:0}
+.shell{position:relative;width:100%;max-width:430px;height:100%;height:100dvh;overflow:hidden;background:var(--bg0);box-shadow:0 0 80px rgba(0,0,0,.8);flex-shrink:0}
 
-.screen{display:none;position:absolute;inset:0;flex-direction:column;background:var(--bg0);z-index:10;overflow:hidden}
+.screen{display:none;position:absolute;inset:0;flex-direction:column;background:var(--bg0);z-index:10;overflow:hidden;height:100%}
 .screen.active{display:flex}
 
 /* Screen scroll area */
@@ -235,7 +253,7 @@ select.ifield{appearance:none;cursor:pointer}
 .ifbtn.act{background:var(--g5);color:#021302;border-color:var(--g5)}
 
 /* Select option */
-.selopt{background:var(--bg2);border:2px solid var(--bdr);border-radius:var(--r12);padding:.9rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.875rem;transition:all .16s}
+.selopt{background:var(--bg2);border:2px solid var(--bdr);border-radius:var(--r12);padding:.9rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.875rem;transition:all .16s;user-select:none}
 .selopt:active{transform:scale(.98)}
 .selopt.sel{border-color:var(--g5);background:rgba(120,242,117,.05)}
 
@@ -402,38 +420,38 @@ select.ifield{appearance:none;cursor:pointer}
       <!-- 6 domain categories in 2-col grid -->
       <div>
         <label class="ilabel">Business Category *</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem" id="catGrid">
-          <div class="selopt sel" id="cat-agri" onclick="selCat('agri')" style="padding:.75rem;border-radius:var(--r8)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;width:100%" id="catGrid">
+          <div class="selopt sel" id="cat-agri" onclick="selCat('agri')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">🌱</div>
             <p style="font-weight:700;font-size:.82rem">Agri Retailer</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Seeds, fertilizers, pesticides</p>
             <span class="material-symbols-outlined fi" style="color:var(--g4);font-size:.85rem;margin-top:.3rem" id="ck-agri">check_circle</span>
           </div>
-          <div class="selopt" id="cat-food" onclick="selCat('food')" style="padding:.75rem;border-radius:var(--r8)">
+          <div class="selopt" id="cat-food" onclick="selCat('food')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">🍱</div>
             <p style="font-weight:700;font-size:.82rem">Food & Grocery</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">FMCG, packaged foods, dairy</p>
             <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-food">radio_button_unchecked</span>
           </div>
-          <div class="selopt" id="cat-pharma" onclick="selCat('pharma')" style="padding:.75rem;border-radius:var(--r8)">
+          <div class="selopt" id="cat-pharma" onclick="selCat('pharma')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">💊</div>
             <p style="font-weight:700;font-size:.82rem">Pharmacy</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Medicines, health products</p>
             <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-pharma">radio_button_unchecked</span>
           </div>
-          <div class="selopt" id="cat-hardware" onclick="selCat('hardware')" style="padding:.75rem;border-radius:var(--r8)">
+          <div class="selopt" id="cat-hardware" onclick="selCat('hardware')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">🔧</div>
             <p style="font-weight:700;font-size:.82rem">Hardware & Tools</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Building, electrical, tools</p>
             <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-hardware">radio_button_unchecked</span>
           </div>
-          <div class="selopt" id="cat-textile" onclick="selCat('textile')" style="padding:.75rem;border-radius:var(--r8)">
+          <div class="selopt" id="cat-textile" onclick="selCat('textile')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">👗</div>
             <p style="font-weight:700;font-size:.82rem">Textile & Fashion</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Clothing, fabric, accessories</p>
             <span class="material-symbols-outlined" style="color:var(--t3);font-size:.85rem;margin-top:.3rem" id="ck-textile">radio_button_unchecked</span>
           </div>
-          <div class="selopt" id="cat-electronics" onclick="selCat('electronics')" style="padding:.75rem;border-radius:var(--r8)">
+          <div class="selopt" id="cat-electronics" onclick="selCat('electronics')" style="padding:.7rem;border-radius:var(--r8);flex-direction:column;align-items:flex-start;gap:.2rem;display:flex">
             <div style="font-size:1.4rem;margin-bottom:.3rem">📱</div>
             <p style="font-weight:700;font-size:.82rem">Electronics</p>
             <p style="font-size:.62rem;color:var(--t2);line-height:1.3">Mobile, gadgets, appliances</p>
@@ -441,9 +459,15 @@ select.ifield{appearance:none;cursor:pointer}
           </div>
         </div>
       </div>
-      <div><label class="ilabel">GST Number <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(Optional)</span></label>
-        <div style="position:relative"><input class="ifield" type="text" id="gstNum" value="27RAMP1234F1ZV" placeholder="27XXXX..." style="font-family:var(--fm);font-size:.82rem;padding-right:5.5rem"/>
-        <div style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%)"><div class="chip chip-g" style="font-size:.58rem">✓ Verified</div></div></div>
+      <div>
+        <label class="ilabel">GST Number <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(Optional)</span></label>
+        <div style="position:relative">
+          <input class="ifield" type="text" id="gstNum" placeholder="e.g. 27AAPFU0939F1ZV" style="font-family:var(--fm);font-size:.82rem;padding-right:6rem" oninput="gstChanged()"/>
+          <div id="gstBadge" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%)">
+            <button onclick="verifyGST()" id="gstVerifyBtn" style="background:rgba(120,242,117,.1);border:1px solid rgba(120,242,117,.25);color:var(--g4);font-size:.62rem;font-weight:700;padding:.2rem .55rem;border-radius:9999px;cursor:pointer;font-family:var(--fd)">Verify</button>
+          </div>
+        </div>
+        <p id="gstStatus" style="font-size:.68rem;color:var(--t3);margin-top:.35rem">Enter GST number to verify · Demo: try <strong style="color:var(--g4);font-family:var(--fm);cursor:pointer" onclick="document.getElementById('gstNum').value='27AAPFU0939F1ZV';gstChanged()">27AAPFU0939F1ZV</strong></p>
       </div>
       <!-- GPS Location -->
       <div>
@@ -1365,6 +1389,37 @@ select.ifield{appearance:none;cursor:pointer}
 const API_KEY = "AIzaSyCP_0VbUN5msITQm3z7erOZAvqygdbFMZw";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
+
+// ── GST Verification ──
+function gstChanged(){
+  const v=document.getElementById('gstNum')?.value||'';
+  const badge=document.getElementById('gstBadge');
+  const status=document.getElementById('gstStatus');
+  const btn=document.getElementById('gstVerifyBtn');
+  if(badge) badge.innerHTML='<button onclick="verifyGST()" id="gstVerifyBtn" style="background:rgba(120,242,117,.1);border:1px solid rgba(120,242,117,.25);color:var(--g4);font-size:.62rem;font-weight:700;padding:.2rem .55rem;border-radius:9999px;cursor:pointer;font-family:var(--fd)">Verify</button>';
+  if(status) status.style.color='var(--t3)';
+}
+
+async function verifyGST(){
+  const v=(document.getElementById('gstNum')?.value||'').trim().toUpperCase();
+  if(v.length<15){showToast('⚠️ Enter full 15-digit GST number');return;}
+  const badge=document.getElementById('gstBadge');
+  const status=document.getElementById('gstStatus');
+  if(badge)badge.innerHTML='<span style="font-size:.72rem;color:var(--t2)">Verifying...</span>';
+  // Simulate API verification with AI
+  const prompt=`Generate a realistic response for a GST number verification for Indian retailer GST: ${v}. Return JSON only: {"valid":true,"business_name":"Name Pvt Ltd","state":"State Name","type":"Regular"}`;
+  const result = await Intelligence.askJSON(prompt);
+  if(result&&result.valid){
+    if(badge)badge.innerHTML='<div class="chip chip-g" style="font-size:.58rem">✓ Verified</div>';
+    if(status){status.textContent=result.business_name+' · '+result.state;status.style.color='var(--g4)';}
+    showToast('✅ GST verified: '+result.business_name);
+  } else {
+    if(badge)badge.innerHTML='<div class="chip chip-r" style="font-size:.58rem">✗ Invalid</div>';
+    if(status){status.textContent='GST verification failed. Check number and retry.';status.style.color='#ef4444';}
+    showToast('❌ Invalid GST number');
+  }
+}
+
 // Wallet toggle — fixes "toggleSheet is not defined"
 function toggleSheet(id){
   const el=document.getElementById(id);
@@ -1751,7 +1806,7 @@ async function initDistributorScreen(){
   document.getElementById('distResults').innerHTML='';
   document.getElementById('distAiTxt').textContent='Finding nearby distributors...';
   renderDistSkels();
-  const catCfg=CAT_CONFIG[S.user.cat]||CAT_CONFIG['agri'];const distKw=catCfg.dist_kw||'agri distributor';const prompt=`Generate 4 realistic Indian ${distKw} companies in ${S.user.loc||'India'}. Return JSON array:\n[{"name":"","city":"","products":["",""],"rating":4.5,"distance":15,"emoji":"🌾"}]`;
+  const catCfg=CAT_CONFIG[S.user.cat]||CAT_CONFIG['agri'];const distKw=catCfg.dist_kw||'agri distributor';const catLbl=catCfg.label||'Retail';const prompt=`Generate 4 REAL-sounding Indian wholesale ${distKw} distributor companies for a ${catLbl} retailer in ${S.user.loc||'India'}. Use authentic Indian company names appropriate for the industry. Return JSON array:\n[{"name":"","city":"","products":["",""],"rating":4.5,"distance":15,"emoji":"🌾"}]`;
   const result=await Intelligence.askJSON(prompt);
   document.getElementById('distAiBar').style.display='none';
   allDists=result&&Array.isArray(result)?result:FALLBACK_DISTS;
@@ -2196,17 +2251,24 @@ function renderEarningsTx(){
      JS 13: AI BUSINESS ASSISTANT CHAT
 ══════════════════════════════════════════ -->
 <script>
-const CHAT_SYS=`You are a concise business intelligence assistant for Indian agri-retailers on CounterOS platform.
+// Dynamic context builder — uses live state
+function getChatContext(){
+  const catLabel = (CAT_CONFIG[S.user.cat]||CAT_CONFIG.agri).label;
+  const invCount = INV.list.length;
+  const lowStock = INV.list.filter(p=>p.qty<6).map(p=>p.name.split(' ').slice(0,2).join(' ')).join(', ')||'none';
+  const topProd  = INV.list.sort((a,b)=>b.earn-a.earn)[0]?.name?.split(' ').slice(0,3).join(' ')||'N/A';
+  return `You are CounterOS, a smart business assistant for Indian retailers.
+Platform: CounterOS — dual earning system (purchase cashback + sale rewards).
+Retailer: ${S.user.name||'Ramesh'} | ${S.user.shop||'Ramesh Agro Traders'} | ${S.user.loc||'India'}
+Category: ${catLabel}
+Tier: Gold (1.75% purchase cashback) | Diamond needs ₹1,00,000/month (2.5%)
+This month: ₹73,450 purchased → ₹2,156 cashback + ₹1,326 sale rewards = ₹3,482 total earned
+Inventory: ${invCount} products | Low stock: ${lowStock} | Top earner: ${topProd}
+Sales: 73 this month | Need ₹26,550 more purchases for Diamond
+Rules: Be concise (max 80 words). Use ₹ symbols. Be specific. No generic filler advice. Sound like a smart business advisor.`;
+}
 
-Retailer context:
-- Shop: ${()=>S.user.shop||'Ramesh Agro Traders'}, ${()=>S.user.loc||'Khetgaon, MP'}
-- Tier: Gold (1.75% purchase cashback)
-- This month: ₹73,450 purchased, ₹2,156 purchase rewards + ₹1,326 sale rewards = ₹3,482 total
-- Need ₹26,550 more to reach Diamond (2.5%)
-- Inventory: 6 products. Low stock: Corteva Delegate (5 units)
-- 73 sales this month
-
-Rules: Max 100 words. Use ₹ symbols. Be specific and data-driven. No generic advice.`;
+const CHAT_SYS=getChatContext; // lazy reference
 
 function initChat(){
   chatHist=[];
@@ -2245,9 +2307,8 @@ async function sendChat(){
   // Build full system context inline in first user message if history is short
   const allMsgs=[...chatHist];
   if(allMsgs.length===1){
-    allMsgs[0]={role:'user',parts:[{text:CHAT_SYS+'
-
-User question: '+msg}]};
+    const ctx=typeof getChatContext==='function'?getChatContext():'You are a smart business assistant for Indian retailers on CounterOS platform. Be concise and specific.';
+    allMsgs[0]={role:'user',parts:[{text:ctx+'\n\nUser question: '+msg}]};
   }
   const body={contents:allMsgs,generationConfig:{temperature:.8,maxOutputTokens:300}};
   try{
@@ -2323,6 +2384,10 @@ function startConfetti(){
 .qa:active{transform:scale(.94)!important}
 .qa-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .qa-card:active{transform:scale(.97)}
+.wallet-hero-card{background:linear-gradient(135deg,#122416,#0a0f0a)}
+[data-theme="light"] .wallet-hero-card{background:linear-gradient(135deg,var(--bg3),var(--bg2))!important}
+[data-theme="light"] .wallet-hero-card *{color:var(--t1)!important}
+[data-theme="light"] #homeBalance{color:var(--t1)!important;-webkit-text-fill-color:var(--t1)!important}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
